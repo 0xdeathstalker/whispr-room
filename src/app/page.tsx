@@ -1,8 +1,15 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 export default function Home() {
+  const tasks = useQuery(api.tasks.get);
+  console.log("[tasks] = ", { tasks });
+
   return (
     <div className="container mx-auto min-h-screen w-full max-w-[100ch] px-4">
       <div className="mx-auto mt-20 flex h-96 w-full max-w-md flex-col items-center justify-between rounded-md border border-neutral-800 p-14">
