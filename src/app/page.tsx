@@ -3,16 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { Label } from "@/components/ui/label";
 
 export default function Home() {
-  const tasks = useQuery(api.tasks.get);
-  console.log("[tasks] = ", { tasks });
-
   return (
     <div className="container mx-auto min-h-screen w-full max-w-[100ch] px-4">
       <div className="mx-auto mt-20 flex h-fit w-full max-w-lg flex-col items-center justify-between rounded-md border border-neutral-300 p-14 shadow-lg dark:shadow-none">
