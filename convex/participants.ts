@@ -14,15 +14,17 @@ export const joinRoom = mutation({
       .filter((q) => q.eq(q.field("roomId"), args.roomId))
       .first();
 
-    if (!room) {
+    if (!room || room.expiresAt < now) {
       throw new Error("Room doesn't exist or has expired");
     }
 
-    return await ctx.db.insert("participants", {
+    await ctx.db.insert("participants", {
       roomId: room._id,
       username: args.username,
       joinedAt: now,
     });
+
+    return { roomId: room.roomId };
   },
 });
 

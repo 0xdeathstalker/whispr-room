@@ -15,7 +15,7 @@ export const createRoom = mutation({
   },
   handler: async (ctx, args) => {
     const now = Date.now();
-    const expiresAt = now + EXPIRY_DURATION;
+    const expiresAt = now + EXPIRY_DURATION * 1000;
 
     const roomId = generateRoomID();
 

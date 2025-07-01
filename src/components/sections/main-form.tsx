@@ -2,25 +2,36 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { Label } from "@/components/ui/label";
-import * as React from "react";
-import { api } from "../../../convex/_generated/api";
-import { useMutation } from "@tanstack/react-query";
+import { Separator } from "@/components/ui/separator";
 import { useConvexMutation } from "@convex-dev/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import * as React from "react";
+import { api } from "../../../convex/_generated/api";
 
 export default function MainForm() {
   const [username, setUsername] = React.useState<string>("");
+  const [roomId, setRoomId] = React.useState<string>("");
 
   const router = useRouter();
 
-  const { mutate: createRoom, isPending } = useMutation({
+  const { mutate: createRoom, isPending: isCreateRoomMutationPending } = useMutation({
     mutationKey: ["createRoom", username],
     mutationFn: useConvexMutation(api.rooms.createRoom),
+    onSuccess: (data: { roomId: string }) => {
+      if (data?.roomId) {
+        router.push(`/room/${data.roomId}?username=${username}`);
+      }
+    },
+  });
+
+  const { mutate: joinRoom, isPending: isJoinRoomMutationPending } = useMutation({
+    mutationKey: ["joinRoom"],
+    mutationFn: useConvexMutation(api.participants.joinRoom),
     onSuccess: (data: { roomId: string }) => {
       if (data?.roomId) {
         router.push(`/room/${data.roomId}?username=${username}`);
@@ -47,6 +58,8 @@ export default function MainForm() {
             <div>
               <Label className="text-muted-foreground mb-2">enter room id:</Label>
               <InputOTP
+                value={roomId}
+                onChange={(e) => setRoomId(e)}
                 maxLength={8}
                 pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
               >
@@ -66,7 +79,9 @@ export default function MainForm() {
             <Button
               variant="outline"
               className="px-7"
+              onClick={() => joinRoom({ roomId, username })}
             >
+              {isJoinRoomMutationPending ? <LoaderCircle className="animate-spin" /> : null}
               join
             </Button>
           </div>
@@ -80,7 +95,7 @@ export default function MainForm() {
             className="w-full"
             onClick={() => createRoom({ username })}
           >
-            {isPending ? <LoaderCircle className="animate-spin" /> : null}
+            {isCreateRoomMutationPending ? <LoaderCircle className="animate-spin" /> : null}
             create a room
           </Button>
           <p className="text-muted-foreground mt-2 text-center text-xs">create room and share it with others.</p>
