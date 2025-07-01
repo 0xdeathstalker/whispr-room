@@ -1,8 +1,8 @@
 "use client";
 
 import { type ReactNode } from "react";
-import ConvexClientProvider from "./convex-provider";
+import QueryProvider from "./query-provider";
 
 export default function Provider({ children }: { children: ReactNode }) {
-  return <ConvexClientProvider>{children}</ConvexClientProvider>;
+  return <QueryProvider>{children}</QueryProvider>;
 }
