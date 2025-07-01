@@ -6,8 +6,24 @@ import { Separator } from "@/components/ui/separator";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { Label } from "@/components/ui/label";
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 export default function Home() {
+  const createRoom = useMutation(api.rooms.createRoom);
+  const joinRoom = useMutation(api.participants.joinRoom);
+
+  const handleCreateRoom = async () => {
+    const roomId = await createRoom({
+      username: "deathstalker",
+    });
+    console.log("[room-id] = ", { roomId });
+  };
+
+  const handleJoinRoom = async () => {
+    await joinRoom({ roomId: "IVKFAQ8Z", username: "test-user-2" });
+  };
+
   return (
     <div className="container mx-auto min-h-screen w-full max-w-[100ch] px-4">
       <div className="mx-auto mt-20 flex h-fit w-full max-w-lg flex-col items-center justify-between rounded-md border border-neutral-300 p-14 shadow-lg dark:shadow-none">
@@ -52,6 +68,7 @@ export default function Home() {
                 <Button
                   variant="outline"
                   className="px-7"
+                  onClick={handleJoinRoom}
                 >
                   join
                 </Button>
@@ -62,7 +79,12 @@ export default function Home() {
             <Separator />
 
             <div className="w-full">
-              <Button className="w-full">create room</Button>
+              <Button
+                className="w-full"
+                onClick={handleCreateRoom}
+              >
+                create room
+              </Button>
               <p className="text-muted-foreground mt-2 text-center text-xs">create room and share it with others.</p>
             </div>
           </div>
