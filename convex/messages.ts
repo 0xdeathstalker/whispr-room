@@ -12,6 +12,7 @@ export const sendMessage = mutation({
       .query("participants")
       .filter((q) => q.and(q.eq(q.field("roomId"), args.roomId), q.eq(q.field("username"), args.username)))
       .first();
+
     const room = await ctx.db
       .query("rooms")
       .filter((q) => q.eq(q.field("roomId"), args.roomId))
