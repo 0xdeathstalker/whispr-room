@@ -25,7 +25,7 @@ export const createRoom = mutation({
       roomId,
     });
 
-    const convexUserId = await ctx.db.insert("participants", {
+    await ctx.db.insert("participants", {
       roomId: convexRoomId,
       username: args.username,
       joinedAt: now,
@@ -37,7 +37,7 @@ export const createRoom = mutation({
 
 export const leaveRoom = mutation({
   args: {
-    roomId: v.id("rooms"),
+    roomId: v.string(),
     username: v.string(),
   },
   handler: async (ctx, args) => {

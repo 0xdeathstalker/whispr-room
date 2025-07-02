@@ -2,14 +2,6 @@
 
 import CopyButton from "@/components/copy-button";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { ChevronDown, Send, Users } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import * as React from "react";
-import { api } from "../../../convex/_generated/api";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +10,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { ChevronDown, Send, Users } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import * as React from "react";
+import { api } from "../../../convex/_generated/api";
 
 export default function Chat({ roomId }: { roomId: string }) {
   return (
@@ -32,9 +32,22 @@ export default function Chat({ roomId }: { roomId: string }) {
 }
 
 function ChatHeader(props: { roomId: string }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const username = searchParams.get("username") ?? "";
+
   const { data: participants, isLoading } = useQuery(
     convexQuery(api.participants.getParticipants, { roomId: props.roomId }),
   );
+
+  const { mutate: leaveRoom } = useMutation({
+    mutationKey: ["leaveRoom", props.roomId],
+    mutationFn: useConvexMutation(api.rooms.leaveRoom),
+    onSuccess: () => {
+      router.push("/");
+    },
+  });
 
   return (
     <div className="flex items-center justify-between px-2 pb-2">
@@ -46,15 +59,18 @@ function ChatHeader(props: { roomId: string }) {
       <div className="flex items-center gap-4">
         <div className="text-muted-foreground inline-flex items-center gap-1">
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild>
               {isLoading ? (
                 <Skeleton className="h-7 w-14" />
               ) : (
-                <div className="hover:bg-accent flex items-center gap-1 rounded-sm px-2 py-1 text-sm">
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-1 rounded-sm px-2 py-1 text-sm"
+                >
                   <Users className="h-4 w-4" />
                   {participants?.length}
                   <ChevronDown className="h-2 w-2" />
-                </div>
+                </Button>
               )}
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -65,6 +81,22 @@ function ChatHeader(props: { roomId: string }) {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => leaveRoom({ roomId: props.roomId, username })}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="21"
+              height="21"
+              fill="currentColor"
+              viewBox="0 0 256 256"
+            >
+              <path d="M124,216a12,12,0,0,1-12,12H48a12,12,0,0,1-12-12V40A12,12,0,0,1,48,28h64a12,12,0,0,1,0,24H60V204h52A12,12,0,0,1,124,216Zm108.49-96.49-40-40a12,12,0,0,0-17,17L195,116H112a12,12,0,0,0,0,24h83l-19.52,19.51a12,12,0,0,0,17,17l40-40A12,12,0,0,0,232.49,119.51Z"></path>
+            </svg>
+          </Button>
         </div>
       </div>
     </div>
@@ -75,7 +107,7 @@ function ChatMessages(props: { roomId: string }) {
   const { data: messages } = useQuery(convexQuery(api.messages.getMessages, { roomId: props.roomId }));
 
   return (
-    <div className="flex h-full max-h-64 flex-col gap-2 overflow-y-auto border-y bg-white px-2 py-3">
+    <div className="flex h-64 flex-col gap-2 overflow-y-auto border-y bg-white px-2 py-3">
       {messages?.map((m) => (
         <div
           key={m._id}
