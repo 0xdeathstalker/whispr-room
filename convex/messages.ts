@@ -8,18 +8,22 @@ export const sendMessage = mutation({
     content: v.string(),
   },
   handler: async (ctx, args) => {
-    const participant = await ctx.db
-      .query("participants")
-      .filter((q) => q.and(q.eq(q.field("roomId"), args.roomId), q.eq(q.field("username"), args.username)))
-      .first();
-
     const room = await ctx.db
       .query("rooms")
       .filter((q) => q.eq(q.field("roomId"), args.roomId))
       .first();
 
-    if (!participant || !room) {
-      throw new Error("Not a valid participant or room");
+    if (!room) {
+      throw new Error(`Room not found with id:: ${args.roomId}`);
+    }
+
+    const participant = await ctx.db
+      .query("participants")
+      .filter((q) => q.and(q.eq(q.field("roomId"), room._id), q.eq(q.field("username"), args.username)))
+      .first();
+
+    if (!participant) {
+      throw new Error(`Participant not found with username:: ${args.username}`);
     }
 
     await ctx.db.insert("messages", {
@@ -36,10 +40,19 @@ export const getMessages = query({
     roomId: v.string(),
   },
   handler: async (ctx, args) => {
+    const room = await ctx.db
+      .query("rooms")
+      .filter((q) => q.eq(q.field("roomId"), args.roomId))
+      .first();
+
+    if (!room) {
+      throw new Error(`Room not found with id:: ${args.roomId}`);
+    }
+
     return await ctx.db
       .query("messages")
-      .filter((q) => q.eq(q.field("roomId"), args.roomId))
-      .order("desc")
+      .filter((q) => q.eq(q.field("roomId"), room._id))
+      .order("asc")
       .collect();
   },
 });
