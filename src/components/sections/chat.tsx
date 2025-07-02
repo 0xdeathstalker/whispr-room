@@ -1,14 +1,23 @@
 "use client";
 
 import CopyButton from "@/components/copy-button";
-import { Input } from "@/components/ui/input";
-import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { Send, Users } from "lucide-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Input } from "@/components/ui/input";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
-import { api } from "../../../convex/_generated/api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { ChevronDown, Send, Users } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import * as React from "react";
+import { api } from "../../../convex/_generated/api";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Chat({ roomId }: { roomId: string }) {
   return (
@@ -36,8 +45,26 @@ function ChatHeader(props: { roomId: string }) {
 
       <div className="flex items-center gap-4">
         <div className="text-muted-foreground inline-flex items-center gap-1">
-          <Users className="h-4 w-4" />
-          <span className="text-sm">{participants?.length}</span>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              {isLoading ? (
+                <Skeleton className="h-7 w-14" />
+              ) : (
+                <div className="hover:bg-accent flex items-center gap-1 rounded-sm px-2 py-1 text-sm">
+                  <Users className="h-4 w-4" />
+                  {participants?.length}
+                  <ChevronDown className="h-2 w-2" />
+                </div>
+              )}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Participants</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {participants?.map((p) => (
+                <DropdownMenuItem key={p._id}>{p.username}</DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>
@@ -45,7 +72,7 @@ function ChatHeader(props: { roomId: string }) {
 }
 
 function ChatMessages(props: { roomId: string }) {
-  const { data: messages, isLoading } = useQuery(convexQuery(api.messages.getMessages, { roomId: props.roomId }));
+  const { data: messages } = useQuery(convexQuery(api.messages.getMessages, { roomId: props.roomId }));
 
   return (
     <div className="flex h-full max-h-64 flex-col gap-2 overflow-y-auto border-y bg-white px-2 py-3">
