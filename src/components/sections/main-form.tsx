@@ -48,15 +48,15 @@ export default function MainForm() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="enter username or alias..."
-            className="font-mono placeholder:font-mono"
+            className="font-mono text-sm placeholder:font-mono"
           />
           <p className="text-muted-foreground mt-1 text-xs">this is your public display name.</p>
         </div>
 
         <div className="w-full">
-          <div className="flex items-end justify-between">
-            <div>
-              <Label className="text-muted-foreground mb-2">enter room id:</Label>
+          <div className="xs:flex-row xs:gap-0 flex w-full flex-col items-end justify-between gap-2">
+            <div className="place-self-start">
+              <Label className="text-muted-foreground mb-2 text-left text-sm">enter room id:</Label>
               <InputOTP
                 value={roomId}
                 onChange={(e) => setRoomId(e)}
@@ -78,7 +78,7 @@ export default function MainForm() {
 
             <Button
               variant="outline"
-              className="px-7"
+              className="xs:w-fit w-full px-7"
               onClick={() => joinRoom({ roomId, username })}
             >
               {isJoinRoomMutationPending ? <LoaderCircle className="animate-spin" /> : null}

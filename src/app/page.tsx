@@ -3,8 +3,8 @@ import MainForm from "@/components/sections/main-form";
 
 export default function Home() {
   return (
-    <div className="container mx-auto min-h-screen w-full max-w-[100ch] px-4">
-      <div className="mx-auto mt-20 flex h-fit w-full max-w-lg flex-col items-center justify-between rounded-md border border-neutral-300 p-14 shadow-lg dark:shadow-none">
+    <div className="container mx-auto flex min-h-screen w-full max-w-[100ch] flex-col items-center justify-center px-4">
+      <div className="mx-auto flex h-fit w-full max-w-md flex-col items-center justify-between rounded-md border border-neutral-300 p-7 shadow-lg sm:max-w-lg sm:p-14 dark:shadow-none">
         <Hero />
 
         <MainForm />
