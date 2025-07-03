@@ -18,6 +18,7 @@ import { ChevronDown, Send, Users } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { api } from "../../../convex/_generated/api";
+import Timer from "@/components/timer";
 
 export default function Chat({ roomId }: { roomId: string }) {
   return (
@@ -37,9 +38,11 @@ function ChatHeader(props: { roomId: string }) {
 
   const username = searchParams.get("username") ?? "";
 
-  const { data: participants, isLoading } = useQuery(
+  const { data: participants, isLoading: isParticipantsLoading } = useQuery(
     convexQuery(api.participants.getParticipants, { roomId: props.roomId }),
   );
+
+  const { data: room, isLoading: isRoomLoading } = useQuery(convexQuery(api.rooms.getRoom, { roomId: props.roomId }));
 
   const { mutate: leaveRoom } = useMutation({
     mutationKey: ["leaveRoom", props.roomId],
@@ -60,8 +63,8 @@ function ChatHeader(props: { roomId: string }) {
         <div className="text-muted-foreground inline-flex items-center gap-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              {isLoading ? (
-                <Skeleton className="h-7 w-14" />
+              {isParticipantsLoading ? (
+                <Skeleton className="h-9 w-14" />
               ) : (
                 <Button
                   variant="ghost"
@@ -76,15 +79,29 @@ function ChatHeader(props: { roomId: string }) {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Participants</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {participants?.map((p) => (
-                <DropdownMenuItem key={p._id}>{p.username}</DropdownMenuItem>
-              ))}
+              {participants ? (
+                participants.map((p) => <DropdownMenuItem key={p._id}>{p.username}</DropdownMenuItem>)
+              ) : (
+                <DropdownMenuItem>No participants</DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {isRoomLoading ? (
+            <Skeleton className="h-9 w-[74px]" />
+          ) : room ? (
+            <Button variant="ghost">
+              <Timer
+                startTimestamp={room.createdAt}
+                stopTimestamp={room.expiresAt}
+              />
+            </Button>
+          ) : null}
 
           <Button
             variant="ghost"
             size="icon"
+            className="hover:bg-destructive/10 hover:text-destructive transition-all ease-in-out"
             onClick={() => leaveRoom({ roomId: props.roomId, username })}
           >
             <svg

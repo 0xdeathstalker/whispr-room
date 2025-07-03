@@ -3,7 +3,6 @@
 import * as React from "react";
 import { useCopyToClipboard } from "usehooks-ts";
 import { CheckIcon, CopyIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 type CopyButtonProps = {
   textToCopy: string | undefined;

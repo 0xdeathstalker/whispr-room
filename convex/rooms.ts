@@ -1,4 +1,4 @@
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { EXPIRY_DURATION } from "../src/lib/constants";
 
@@ -60,5 +60,15 @@ export const leaveRoom = mutation({
     }
 
     await ctx.db.delete(participant._id);
+  },
+});
+
+export const getRoom = query({
+  args: { roomId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("rooms")
+      .filter((q) => q.eq(q.field("roomId"), args.roomId))
+      .first();
   },
 });
