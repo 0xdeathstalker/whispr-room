@@ -74,6 +74,7 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
 ## Todo
 
 - [x] time remaining to expire in the chat header
+- [x] message view should be scrolled down to the latest message
 - [ ] timer countdown should be improved by using framer motion
 - [x] system messages should be added e.g. `<username> entered the room`, `<username> left the room`
 - [ ] cron jobs for scheduled cleanup of expired rooms

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTimer } from "@/lib/hooks/useTimer";
-import { formatTime } from "@/lib/utils";
+import { cn, formatTime } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
 export default function Timer({ startTimestamp, stopTimestamp }: { startTimestamp: number; stopTimestamp: number }) {
@@ -9,5 +9,5 @@ export default function Timer({ startTimestamp, stopTimestamp }: { startTimestam
 
   const { timeLeft } = useTimer({ startTimestamp, stopTimestamp, onExpire: () => router.push("/") });
 
-  return <span>{formatTime(timeLeft)}</span>;
+  return <span className={cn(timeLeft <= 30 ? "text-red-500" : "")}>{formatTime(timeLeft)}</span>;
 }

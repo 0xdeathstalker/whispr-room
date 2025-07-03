@@ -131,8 +131,22 @@ function ChatMessages(props: { roomId: string }) {
 
   const { data: messages } = useQuery(convexQuery(api.messages.getMessages, { roomId: props.roomId }));
 
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTo({
+        top: containerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [messages]);
+
   return (
-    <div className="flex h-64 flex-col gap-2 overflow-y-auto border-y bg-white px-2 py-3">
+    <div
+      ref={containerRef}
+      className="flex h-64 flex-col gap-2 overflow-y-auto border-y bg-white px-2 py-3"
+    >
       {messages?.map((m) => {
         if (m.isSystem) {
           const systemMessage = getSystemMessage({
