@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ChevronDown, Send, Users } from "lucide-react";
+import { ChevronDown, LoaderCircle, Send, Users } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { api } from "../../../convex/_generated/api";
@@ -45,7 +45,7 @@ function ChatHeader(props: { roomId: string }) {
 
   const { data: room, isLoading: isRoomLoading } = useQuery(convexQuery(api.rooms.getRoom, { roomId: props.roomId }));
 
-  const { mutate: leaveRoom } = useMutation({
+  const { mutate: leaveRoom, isPending: isLeaveRoomMutationPending } = useMutation({
     mutationKey: ["leaveRoom", props.roomId],
     mutationFn: useConvexMutation(api.rooms.leaveRoom),
     onSuccess: () => {
@@ -105,15 +105,19 @@ function ChatHeader(props: { roomId: string }) {
             className="hover:bg-destructive/10 hover:text-destructive transition-all ease-in-out"
             onClick={() => leaveRoom({ roomId: props.roomId, username })}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="21"
-              height="21"
-              fill="currentColor"
-              viewBox="0 0 256 256"
-            >
-              <path d="M124,216a12,12,0,0,1-12,12H48a12,12,0,0,1-12-12V40A12,12,0,0,1,48,28h64a12,12,0,0,1,0,24H60V204h52A12,12,0,0,1,124,216Zm108.49-96.49-40-40a12,12,0,0,0-17,17L195,116H112a12,12,0,0,0,0,24h83l-19.52,19.51a12,12,0,0,0,17,17l40-40A12,12,0,0,0,232.49,119.51Z"></path>
-            </svg>
+            {isLeaveRoomMutationPending ? (
+              <LoaderCircle className="h-3 w-3 animate-spin" />
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="21"
+                height="21"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+              >
+                <path d="M124,216a12,12,0,0,1-12,12H48a12,12,0,0,1-12-12V40A12,12,0,0,1,48,28h64a12,12,0,0,1,0,24H60V204h52A12,12,0,0,1,124,216Zm108.49-96.49-40-40a12,12,0,0,0-17,17L195,116H112a12,12,0,0,0,0,24h83l-19.52,19.51a12,12,0,0,0,17,17l40-40A12,12,0,0,0,232.49,119.51Z"></path>
+              </svg>
+            )}
           </Button>
         </div>
       </div>
@@ -173,7 +177,7 @@ function ChatFooter(props: { roomId: string }) {
   const searchParams = useSearchParams();
   const username = searchParams.get("username") ?? "";
 
-  const { mutate: sendMessage } = useMutation({
+  const { mutate: sendMessage, isPending: isSendMessagePending } = useMutation({
     mutationKey: ["sendMessage", message],
     mutationFn: useConvexMutation(api.messages.sendMessage),
     onSuccess: () => {
@@ -191,9 +195,10 @@ function ChatFooter(props: { roomId: string }) {
       />
       <Button
         size="icon"
+        disabled={!message.trim()}
         onClick={() => sendMessage({ roomId: props.roomId, username, content: message })}
       >
-        <Send className="h-3 w-3" />
+        {isSendMessagePending ? <LoaderCircle className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
       </Button>
     </div>
   );
