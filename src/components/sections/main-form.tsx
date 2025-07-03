@@ -85,7 +85,7 @@ export default function MainForm() {
               join
             </Button>
           </div>
-          <p className="text-muted-foreground mt-1 text-xs">create a room if you don't have one.</p>
+          <p className="text-muted-foreground mt-1 text-xs">create a room if you don&apos;t have one.</p>
         </div>
 
         <Separator />
