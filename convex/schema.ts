@@ -19,5 +19,6 @@ export default defineSchema({
     username: v.string(),
     content: v.string(),
     createdAt: v.number(),
+    isSystem: v.optional(v.boolean()),
   }),
 });

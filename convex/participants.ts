@@ -24,6 +24,14 @@ export const joinRoom = mutation({
       joinedAt: now,
     });
 
+    await ctx.db.insert("messages", {
+      roomId: room._id,
+      username: "System",
+      content: `${args.username} joined the room`,
+      createdAt: Date.now(),
+      isSystem: true,
+    });
+
     return { roomId: room.roomId };
   },
 });

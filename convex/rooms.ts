@@ -31,6 +31,14 @@ export const createRoom = mutation({
       joinedAt: now,
     });
 
+    await ctx.db.insert("messages", {
+      roomId: convexRoomId,
+      username: "System",
+      content: `${args.username} created the room`,
+      createdAt: Date.now(),
+      isSystem: true,
+    });
+
     return { roomId };
   },
 });
@@ -58,6 +66,14 @@ export const leaveRoom = mutation({
     if (!participant) {
       throw new Error("Participant doesn't exist");
     }
+
+    await ctx.db.insert("messages", {
+      roomId: room._id,
+      username: "System",
+      content: `${args.username} left the room`,
+      createdAt: Date.now(),
+      isSystem: true,
+    });
 
     await ctx.db.delete(participant._id);
   },
