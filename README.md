@@ -24,7 +24,7 @@ A disposable chat room for quick, ephemeral conversations.
 ### Prerequisites
 
 - Node.js (v18+ recommended)
-- pnpm (or npm/yarn)
+- pnpm
 
 ### Installation
 
