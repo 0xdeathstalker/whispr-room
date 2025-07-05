@@ -9,5 +9,5 @@ export default function Timer({ startTimestamp, stopTimestamp }: { startTimestam
 
   const { timeLeft } = useTimer({ startTimestamp, stopTimestamp, onExpire: () => router.push("/") });
 
-  return <span className={cn(timeLeft <= 30 ? "text-red-500" : "")}>{formatTime(timeLeft)}</span>;
+  return <span className={cn(timeLeft <= 30 ? "text-red-500" : "", "text-xs sm:text-sm")}>{formatTime(timeLeft)}</span>;
 }

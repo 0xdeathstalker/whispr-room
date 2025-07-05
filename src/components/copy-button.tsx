@@ -28,7 +28,7 @@ export default function CopyButton({ textToCopy, children }: CopyButtonProps) {
 
   return (
     <button
-      className="dark:hover:bg-accent/50 hover:bg-accent hover:text-accent-foreground inline-flex size-5 cursor-pointer items-center justify-center rounded-xs"
+      className="dark:hover:bg-accent/50 hover:bg-accent hover:text-accent-foreground inline-flex size-5 cursor-pointer items-center justify-center rounded-sm"
       onClick={handleCopy}
     >
       {isCopied ? (

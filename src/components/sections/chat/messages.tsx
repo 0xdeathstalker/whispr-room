@@ -1,0 +1,68 @@
+"use client";
+
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "../../../../convex/_generated/api";
+import { useSearchParams } from "next/navigation";
+import * as React from "react";
+import getSystemMessage from "@/lib/actions/getSystemMessage";
+
+export default function ChatMessages(props: { roomId: string }) {
+  const searchParams = useSearchParams();
+  const username = searchParams.get("username") ?? "";
+
+  const { data: messages } = useQuery(convexQuery(api.messages.getMessages, { roomId: props.roomId }));
+
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTo({
+        top: containerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [messages]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="flex h-64 flex-col gap-2 overflow-y-auto border-y bg-white px-2 py-3"
+    >
+      {messages?.map((m) => {
+        if (m.isSystem) {
+          const systemMessage = getSystemMessage({
+            username,
+            messageContent: m.content,
+          });
+
+          return (
+            <div
+              key={m._id}
+              className="text-muted-foreground text-center text-[10px]"
+            >
+              {systemMessage}
+            </div>
+          );
+        } else {
+          return (
+            <div
+              key={m._id}
+              className="bg-secondary flex flex-col gap-1 rounded-md px-3 py-2 shadow-xs"
+            >
+              <div className="text-muted-foreground flex items-center justify-between gap-2 text-xs font-semibold">
+                <span>@{m.username}</span>
+                {m.createdAt && (
+                  <span className="text-muted-foreground text-[10px]">
+                    {new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                )}
+              </div>
+              <div className="text-secondary-foreground text-sm break-words">{m.content}</div>
+            </div>
+          );
+        }
+      })}
+    </div>
+  );
+}
