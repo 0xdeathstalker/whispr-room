@@ -1,8 +1,8 @@
 "use client";
 
+import { CheckIcon, CopyIcon } from "lucide-react";
 import * as React from "react";
 import { useCopyToClipboard } from "usehooks-ts";
-import { CheckIcon, CopyIcon } from "lucide-react";
 
 type CopyButtonProps = {
   textToCopy: string | undefined;

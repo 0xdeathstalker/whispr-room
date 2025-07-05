@@ -1,6 +1,6 @@
-import { internalMutation, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { EXPIRY_DURATION } from "../src/lib/constants";
+import { internalMutation, mutation, query } from "./_generated/server";
 
 function generateRoomID(length = 6) {
   return Math.random()

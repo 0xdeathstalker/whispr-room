@@ -1,10 +1,8 @@
 "use client";
 
-import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
-import { api } from "../../../../convex/_generated/api";
 import CopyButton from "@/components/copy-button";
+import Timer from "@/components/timer";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,11 +11,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { ChevronDown, EllipsisVertical, LoaderCircle, Users } from "lucide-react";
+import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
-import Timer from "@/components/timer";
-import * as React from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { ChevronDown, EllipsisVertical, LoaderCircle, Users } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { api } from "../../../../convex/_generated/api";
 
 export default function ChatHeader(props: { roomId: string }) {
   const router = useRouter();
