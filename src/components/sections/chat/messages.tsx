@@ -3,13 +3,12 @@
 import getSystemMessage from "@/lib/actions/getSystemMessage";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import { api } from "../../../../convex/_generated/api";
+import { useQueryState } from "nuqs";
 
 export default function ChatMessages(props: { roomId: string }) {
-  const searchParams = useSearchParams();
-  const username = searchParams.get("username") ?? "";
+  const [username] = useQueryState("username", { defaultValue: "" });
 
   const { data: messages } = useQuery(convexQuery(api.messages.getMessages, { roomId: props.roomId }));
 

@@ -5,15 +5,14 @@ import { Input } from "@/components/ui/input";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { LoaderCircle, Send } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import { api } from "../../../../convex/_generated/api";
+import { useQueryState } from "nuqs";
 
 export default function ChatFooter(props: { roomId: string }) {
   const [message, setMessage] = React.useState<string>("");
 
-  const searchParams = useSearchParams();
-  const username = searchParams.get("username") ?? "";
+  const [username] = useQueryState("username", { defaultValue: "" });
 
   const { mutate: sendMessage, isPending: isSendMessagePending } = useMutation({
     mutationKey: ["sendMessage", message],

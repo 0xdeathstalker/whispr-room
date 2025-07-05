@@ -15,14 +15,13 @@ import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ChevronDown, EllipsisVertical, LoaderCircle, Users } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useQueryState } from "nuqs";
 import { api } from "../../../../convex/_generated/api";
 
 export default function ChatHeader(props: { roomId: string }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const username = searchParams.get("username") ?? "";
+  const [username] = useQueryState("username", { defaultValue: "" });
 
   const { data: participants, isLoading: isParticipantsLoading } = useQuery(
     convexQuery(api.participants.getParticipants, { roomId: props.roomId }),
@@ -167,10 +166,7 @@ export default function ChatHeader(props: { roomId: string }) {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => leaveRoom({ roomId: props.roomId, username })}
-                // className="hover:bg-destructive/10 hover:text-destructive transition-all ease-in-out"
-              >
+              <DropdownMenuItem onClick={() => leaveRoom({ roomId: props.roomId, username })}>
                 {isLeaveRoomMutationPending ? (
                   <LoaderCircle className="h-3 w-3 animate-spin" />
                 ) : (

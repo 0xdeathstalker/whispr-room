@@ -24,7 +24,7 @@ export default function MainForm() {
     mutationFn: useConvexMutation(api.rooms.createRoom),
     onSuccess: (data: { roomId: string }) => {
       if (data?.roomId) {
-        router.push(`/room/${data.roomId}?username=${username}`);
+        router.push(`/room/${data.roomId}?username=${encodeURIComponent(username)}`);
       }
     },
   });
@@ -34,7 +34,7 @@ export default function MainForm() {
     mutationFn: useConvexMutation(api.participants.joinRoom),
     onSuccess: (data: { roomId: string }) => {
       if (data?.roomId) {
-        router.push(`/room/${data.roomId}?username=${username}`);
+        router.push(`/room/${data.roomId}?username=${encodeURIComponent(username)}`);
       }
     },
   });
