@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
-import { LoaderCircle } from "lucide-react";
+import { ArrowRight, LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { api } from "../../../convex/_generated/api";
@@ -54,13 +54,13 @@ export default function MainForm() {
         </div>
 
         <div className="w-full">
-          <div className="xs:flex-row xs:gap-0 flex w-full flex-col items-end justify-between gap-2">
+          <div className="flex w-full items-end gap-2">
             <div className="place-self-start">
               <Label className="text-muted-foreground mb-2 text-left text-sm">enter room id:</Label>
               <InputOTP
                 value={roomId}
                 onChange={(e) => setRoomId(e)}
-                maxLength={8}
+                maxLength={6}
                 pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
               >
                 <InputOTPGroup>
@@ -70,20 +70,24 @@ export default function MainForm() {
                   <InputOTPSlot index={3} />
                   <InputOTPSlot index={4} />
                   <InputOTPSlot index={5} />
-                  <InputOTPSlot index={6} />
-                  <InputOTPSlot index={7} />
                 </InputOTPGroup>
               </InputOTP>
             </div>
 
-            <Button
-              variant="outline"
-              className="xs:w-fit w-full px-7"
-              onClick={() => joinRoom({ roomId, username })}
-            >
-              {isJoinRoomMutationPending ? <LoaderCircle className="animate-spin" /> : null}
-              join
-            </Button>
+            <div className="w-full">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => joinRoom({ roomId, username })}
+              >
+                {isJoinRoomMutationPending ? (
+                  <LoaderCircle className="animate-spin" />
+                ) : (
+                  <ArrowRight className="xs:hidden h-3 w-3" />
+                )}
+                <span className="xs:inline hidden">join</span>
+              </Button>
+            </div>
           </div>
           <p className="text-muted-foreground mt-1 text-xs">create a room if you don&apos;t have one.</p>
         </div>

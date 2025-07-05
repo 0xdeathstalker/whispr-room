@@ -101,7 +101,7 @@ export default function ChatHeader(props: { roomId: string }) {
           <Button
             variant="ghost"
             size="icon"
-            className="hover:bg-destructive/10 hover:text-destructive hidden transition-all ease-in-out sm:inline-flex"
+            className="hover:bg-destructive/10 hover:text-destructive hidden size-[32px] transition-all ease-in-out sm:inline-flex"
             onClick={() => leaveRoom({ roomId: props.roomId, username })}
           >
             {isLeaveRoomMutationPending ? (

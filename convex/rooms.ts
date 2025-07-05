@@ -2,7 +2,7 @@ import { internalMutation, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { EXPIRY_DURATION } from "../src/lib/constants";
 
-function generateRoomID(length = 8) {
+function generateRoomID(length = 6) {
   return Math.random()
     .toString(36)
     .substring(2, 2 + length)
