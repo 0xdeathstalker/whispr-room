@@ -17,6 +17,7 @@ A disposable chat room for quick, ephemeral conversations.
 - [React](https://react.dev/)
 - [Convex](https://convex.dev/) (for backend/database)
 - [React Query](https://tanstack.com/query/latest)
+- [Zod](https://zod.dev/)
 - [Tailwind](https://tailwindcss.com/)
 
 ## Getting Started

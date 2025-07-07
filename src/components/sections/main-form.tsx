@@ -1,30 +1,46 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useConvexMutation } from "@convex-dev/react-query";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { ArrowRight, LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import * as React from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 import { api } from "../../../convex/_generated/api";
 
-export default function MainForm() {
-  const [username, setUsername] = React.useState<string>("");
-  const [roomId, setRoomId] = React.useState<string>("");
+const formSchema = z.object({
+  username: z.string().min(3, { message: "username should be atleast 3 characters" }),
+  roomId: z.string().length(6, { message: "roomId should be 6 characters" }).optional().or(z.literal("")),
+});
 
+type FormValues = z.infer<typeof formSchema>;
+
+export default function MainForm() {
   const router = useRouter();
 
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+      roomId: "",
+    },
+  });
+
   const { mutate: createRoom, isPending: isCreateRoomMutationPending } = useMutation({
-    mutationKey: ["createRoom", username],
+    mutationKey: ["createRoom"],
     mutationFn: useConvexMutation(api.rooms.createRoom),
     onSuccess: (data: { roomId: string }) => {
       if (data?.roomId) {
-        router.push(`/room/${data.roomId}?username=${encodeURIComponent(username)}`);
+        router.push(`/room/${data.roomId}?username=${encodeURIComponent(form.getValues("username"))}`);
       }
     },
   });
@@ -34,77 +50,131 @@ export default function MainForm() {
     mutationFn: useConvexMutation(api.participants.joinRoom),
     onSuccess: (data: { roomId: string }) => {
       if (data?.roomId) {
-        router.push(`/room/${data.roomId}?username=${encodeURIComponent(username)}`);
+        router.push(`/room/${data.roomId}?username=${encodeURIComponent(form.getValues("username"))}`);
       }
     },
   });
 
+  function handleCreateRoom(data: FormValues) {
+    if (!data.username) {
+      toast.error("error: username is required to create room");
+      return;
+    }
+
+    createRoom({ username: data.username });
+  }
+
+  function handleJoinRoom(data: FormValues) {
+    if (!data.username || !data.roomId) {
+      toast.error("error: both username and room Id is required");
+      return;
+    }
+
+    joinRoom({ roomId: data.roomId, username: data.username });
+  }
+
   return (
     <div className="mt-6 flex w-full flex-col items-center">
-      <div className="flex w-full flex-col items-center gap-6 font-mono">
-        <div className="w-full">
-          <Label className="text-muted-foreground mb-2">username</Label>
-          <Input
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="enter username or alias..."
-            className="font-mono text-sm placeholder:font-mono"
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(handleCreateRoom)}
+          className="flex w-full flex-col items-center gap-6 font-mono"
+        >
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel className="text-muted-foreground">username</FormLabel>
+
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="enter username or alias..."
+                    className="font-mono text-sm placeholder:font-mono"
+                    autoComplete="off"
+                  />
+                </FormControl>
+
+                {/* <FormDescription className="text-muted-foreground text-xs">
+                  this is your public display name.
+                </FormDescription> */}
+
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          <p className="text-muted-foreground mt-1 text-xs">this is your public display name.</p>
-        </div>
 
-        <div className="w-full">
-          <div className="flex w-full items-end gap-2">
-            <div className="place-self-start">
-              <Label className="text-muted-foreground mb-2 text-left text-sm">enter room id:</Label>
-              <InputOTP
-                value={roomId}
-                onChange={(e) => setRoomId(e)}
-                maxLength={6}
-                pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
-              >
-                <InputOTPGroup>
-                  <InputOTPSlot index={0} />
-                  <InputOTPSlot index={1} />
-                  <InputOTPSlot index={2} />
-                  <InputOTPSlot index={3} />
-                  <InputOTPSlot index={4} />
-                  <InputOTPSlot index={5} />
-                </InputOTPGroup>
-              </InputOTP>
-            </div>
+          <FormField
+            control={form.control}
+            name="roomId"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel className="text-muted-foreground text-left text-sm">enter room id:</FormLabel>
 
-            <div className="w-full">
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => joinRoom({ roomId, username })}
-              >
-                {isJoinRoomMutationPending ? (
-                  <LoaderCircle className="animate-spin" />
-                ) : (
-                  <ArrowRight className="xs:hidden h-3 w-3" />
-                )}
-                <span className="xs:inline hidden">join</span>
-              </Button>
-            </div>
+                <FormControl>
+                  <div className="flex items-center gap-2">
+                    <InputOTP
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                      maxLength={6}
+                      pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
+                    >
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                      </InputOTPGroup>
+                    </InputOTP>
+
+                    <div className="w-full">
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        disabled={isJoinRoomMutationPending}
+                        onClick={form.handleSubmit(handleJoinRoom)}
+                      >
+                        {isJoinRoomMutationPending ? (
+                          <LoaderCircle className="animate-spin" />
+                        ) : (
+                          <ArrowRight className="xs:hidden h-3 w-3" />
+                        )}
+                        <span className="xs:inline hidden">join</span>
+                      </Button>
+                    </div>
+                  </div>
+                </FormControl>
+
+                {/* <FormDescription className="text-muted-foreground text-xs">
+                  create a room if you don&apos;t have one.
+                </FormDescription> */}
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Separator />
+
+          <div className="w-full">
+            <Button
+              className="w-full"
+              type="submit"
+              disabled={isCreateRoomMutationPending}
+            >
+              {isCreateRoomMutationPending ? <LoaderCircle className="animate-spin" /> : null}
+              create a room
+            </Button>
+
+            <Label className="text-muted-foreground mt-2 text-center text-xs">
+              create room and share it with others.
+            </Label>
           </div>
-          <p className="text-muted-foreground mt-1 text-xs">create a room if you don&apos;t have one.</p>
-        </div>
-
-        <Separator />
-
-        <div className="w-full">
-          <Button
-            className="w-full"
-            onClick={() => createRoom({ username })}
-          >
-            {isCreateRoomMutationPending ? <LoaderCircle className="animate-spin" /> : null}
-            create a room
-          </Button>
-          <p className="text-muted-foreground mt-2 text-center text-xs">create room and share it with others.</p>
-        </div>
-      </div>
+        </form>
+      </Form>
     </div>
   );
 }
