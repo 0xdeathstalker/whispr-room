@@ -79,11 +79,11 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
 - [x] cron jobs for scheduled cleanup of expired rooms
 - [x] upon room expiry, if the user is still on the `/room/<id>` page then it should redirect the user to `/` page.
 - [ ] access to the expired rooms should be blocked
-- [ ] if the user is not on the room tab, before redirecting it should wait for the tab to active and then it should redirect after 3 seconds
-- [ ] timer countdown should be improved by using framer motion
 - [ ] add form validation
-- [ ] use nuqs for search params
+- [ ] if the user is not on the room tab, display a toast with a message that will stay unless the user does not clear
+- [x] use nuqs for search params
 - [ ] UI revamp
+- [ ] timer countdown should be improved by using framer motion
 
 ## Contributing
 

@@ -36,40 +36,6 @@ export const joinRoom = mutation({
   },
 });
 
-export const leaveRoom = mutation({
-  args: {
-    roomId: v.string(),
-    username: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const room = await ctx.db
-      .query("rooms")
-      .filter((q) => q.eq(q.field("roomId"), args.roomId))
-      .first();
-
-    if (!room) {
-      throw new Error(`Room with ${args.roomId} not found!`);
-    }
-
-    const participant = await ctx.db
-      .query("participants")
-      .filter((q) => q.and(q.eq(q.field("roomId"), room._id), q.eq(q.field("username"), args.username)))
-      .first();
-
-    if (participant) {
-      await ctx.db.delete(participant._id);
-    }
-
-    await ctx.db.insert("messages", {
-      roomId: room._id,
-      username: "System",
-      content: `${args.username} left the room`,
-      createdAt: Date.now(),
-      isSystem: true,
-    });
-  },
-});
-
 export const getParticipants = query({
   args: {
     roomId: v.string(),

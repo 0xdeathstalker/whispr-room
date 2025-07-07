@@ -63,7 +63,7 @@ export default function ChatHeader(props: { roomId: string }) {
               )}
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel className="text-muted-foreground p-1 font-mono text-sm">
+              <DropdownMenuLabel className="text-muted-foreground p-1 font-mono text-xs">
                 Participants
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -71,13 +71,13 @@ export default function ChatHeader(props: { roomId: string }) {
                 participants.map((p) => (
                   <DropdownMenuItem
                     key={p._id}
-                    className="font-mono"
+                    className="font-mono text-xs"
                   >
-                    {p.username}
+                    {p.username === username ? `you(${p.username})` : p.username}
                   </DropdownMenuItem>
                 ))
               ) : (
-                <DropdownMenuItem>No participants</DropdownMenuItem>
+                <DropdownMenuItem className="text-xs">No participants</DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -147,7 +147,7 @@ export default function ChatHeader(props: { roomId: string }) {
                     )}
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start">
-                    <DropdownMenuLabel className="text-muted-foreground px-1 py-1 font-mono text-sm">
+                    <DropdownMenuLabel className="text-muted-foreground px-1 py-1 font-mono text-xs">
                       Participants
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
@@ -155,13 +155,13 @@ export default function ChatHeader(props: { roomId: string }) {
                       participants.map((p) => (
                         <DropdownMenuItem
                           key={p._id}
-                          className="font-mono text-sm"
+                          className="font-mono text-xs"
                         >
-                          {p.username}
+                          {p.username === username ? `you(${p.username})` : p.username}
                         </DropdownMenuItem>
                       ))
                     ) : (
-                      <DropdownMenuItem className="font-mono text-sm">No participants</DropdownMenuItem>
+                      <DropdownMenuItem className="font-mono text-xs">No participants</DropdownMenuItem>
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>

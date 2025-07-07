@@ -8,7 +8,7 @@ export function useRoomLeave(roomId: string, username: string) {
 
   const { mutate: leaveRoom } = useMutation({
     mutationKey: ["leave-room", roomId, username],
-    mutationFn: useConvexMutation(api.participants.leaveRoom),
+    mutationFn: useConvexMutation(api.rooms.leaveRoom),
   });
 
   const handleLeaveRoom = () => {
@@ -27,7 +27,6 @@ export function useRoomLeave(roomId: string, username: string) {
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      handleLeaveRoom();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, username]);
