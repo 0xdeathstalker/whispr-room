@@ -1,15 +1,14 @@
 "use client";
 
+import RoomIdInput from "@/components/sections/roomid-input";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { ArrowRight, LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -114,21 +113,10 @@ export default function MainForm() {
 
                 <FormControl>
                   <div className="flex items-center gap-2">
-                    <InputOTP
-                      value={field.value ?? ""}
+                    <RoomIdInput
+                      value={field.value}
                       onChange={field.onChange}
-                      maxLength={6}
-                      pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
-                    >
-                      <InputOTPGroup>
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                        <InputOTPSlot index={3} />
-                        <InputOTPSlot index={4} />
-                        <InputOTPSlot index={5} />
-                      </InputOTPGroup>
-                    </InputOTP>
+                    />
 
                     <div className="w-full">
                       <Button

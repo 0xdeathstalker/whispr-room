@@ -3,9 +3,9 @@
 import getSystemMessage from "@/lib/actions/getSystemMessage";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
+import { useQueryState } from "nuqs";
 import * as React from "react";
 import { api } from "../../../../convex/_generated/api";
-import { useQueryState } from "nuqs";
 
 export default function ChatMessages(props: { roomId: string }) {
   const [username] = useQueryState("username", { defaultValue: "" });

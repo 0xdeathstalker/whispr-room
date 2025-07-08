@@ -9,10 +9,10 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
-import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ChevronDown, EllipsisVertical, LoaderCircle, Users } from "lucide-react";
 import { useRouter } from "next/navigation";

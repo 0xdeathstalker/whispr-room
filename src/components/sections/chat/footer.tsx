@@ -5,9 +5,9 @@ import { Input } from "@/components/ui/input";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { LoaderCircle, Send } from "lucide-react";
+import { useQueryState } from "nuqs";
 import * as React from "react";
 import { api } from "../../../../convex/_generated/api";
-import { useQueryState } from "nuqs";
 
 export default function ChatFooter(props: { roomId: string }) {
   const [message, setMessage] = React.useState<string>("");
@@ -29,6 +29,8 @@ export default function ChatFooter(props: { roomId: string }) {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         className="font-mono text-sm placeholder:font-mono"
+        disabled={isSendMessagePending}
+        onKeyDown={(e) => e.key === "Enter" && sendMessage({ roomId: props.roomId, username, content: message })}
       />
       <Button
         size="icon"
