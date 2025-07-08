@@ -79,7 +79,7 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
 - [x] system messages should be added e.g. `<username> entered the room`, `<username> left the room`
 - [x] cron jobs for scheduled cleanup of expired rooms
 - [x] upon room expiry, if the user is still on the `/room/<id>` page then it should redirect the user to `/` page.
-- [ ] access to the expired rooms should be blocked
+- [x] access to the expired rooms should be blocked
 - [x] add form validation
 - [ ] if the user is not on the room tab, display a toast with a message that will stay unless the user does not clear
 - [x] use nuqs for search params

@@ -42,6 +42,9 @@ export default function MainForm() {
         router.push(`/room/${data.roomId}?username=${encodeURIComponent(form.getValues("username"))}`);
       }
     },
+    onError: (error) => {
+      toast(`error: ${error.message}`);
+    },
   });
 
   const { mutate: joinRoom, isPending: isJoinRoomMutationPending } = useMutation({
@@ -51,6 +54,11 @@ export default function MainForm() {
       if (data?.roomId) {
         router.push(`/room/${data.roomId}?username=${encodeURIComponent(form.getValues("username"))}`);
       }
+    },
+    onError: (error) => {
+      toast(
+        `error: ${error.message.includes("Room doesn't exist or has expired") ? "Room has expired" : `${error.message}`}`,
+      );
     },
   });
 

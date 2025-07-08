@@ -7,9 +7,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
@@ -27,7 +27,10 @@ export default function ChatHeader(props: { roomId: string }) {
     convexQuery(api.participants.getParticipants, { roomId: props.roomId }),
   );
 
-  const { data: room, isLoading: isRoomLoading } = useQuery(convexQuery(api.rooms.getRoom, { roomId: props.roomId }));
+  const { data: room, isLoading: isRoomLoading } = useQuery({
+    ...convexQuery(api.rooms.getRoom, { roomId: props.roomId }),
+    retry: false,
+  });
 
   const { mutate: leaveRoom, isPending: isLeaveRoomMutationPending } = useMutation({
     mutationKey: ["leaveRoom", props.roomId],
