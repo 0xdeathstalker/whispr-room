@@ -165,7 +165,7 @@ export default function MainForm() {
               create a room
             </Button>
 
-            <Label className="text-muted-foreground mt-2 text-center text-xs">
+            <Label className="text-muted-foreground mt-2 justify-center text-xs">
               create room and share it with others.
             </Label>
           </div>

@@ -9,12 +9,18 @@ import { api } from "../../../../convex/_generated/api";
 import ChatFooter from "./footer";
 import ChatHeader from "./header";
 import ChatMessages from "./messages";
+import { useRoomLeave } from "@/lib/hooks/useRoomLeave";
+import { useQueryState } from "nuqs";
 
 export default function Chat({ roomId }: { roomId: string }) {
+  const [username] = useQueryState("username", { defaultValue: "" });
+
   const { data: room, isLoading } = useQuery({
     ...convexQuery(api.rooms.getRoom, { roomId }),
     retry: false,
   });
+
+  useRoomLeave({ roomId, username });
 
   if (!isLoading && (!room || room?.expiresAt <= Date.now())) {
     return (
