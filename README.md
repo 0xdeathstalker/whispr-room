@@ -74,17 +74,10 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
 
 ## Future Improvements
 
-- [x] time remaining to expire in the chat header
-- [x] message view should be scrolled down to the latest message
-- [x] system messages should be added e.g. `<username> entered the room`, `<username> left the room`
-- [x] cron jobs for scheduled cleanup of expired rooms
-- [x] upon room expiry, if the user is still on the `/room/<id>` page then it should redirect the user to `/` page.
-- [x] access to the expired rooms should be blocked
-- [x] add form validation
-- [ ] if the user is not on the room tab, display a toast with a message that will stay unless the user does not clear
-- [x] use nuqs for search params
+- [ ] auto join if the user visits the url containing valid roomId and username
+- [ ] allow media sharing
 - [ ] UI revamp
-- [ ] timer countdown should be improved by using framer motion
+- [ ] timer countdown improvement using framer motion
 
 ## Contributing
 
