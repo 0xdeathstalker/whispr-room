@@ -26,7 +26,7 @@ export default function ChatMessages(props: { roomId: string }) {
   return (
     <div
       ref={containerRef}
-      className="flex h-64 flex-col gap-2 overflow-y-auto border-y bg-white px-2 py-3"
+      className="bg-background flex h-64 flex-col gap-2 overflow-y-auto border-y px-2 py-3"
     >
       {messages?.map((m) => {
         if (m.isSystem) {

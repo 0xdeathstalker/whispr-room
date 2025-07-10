@@ -1,16 +1,16 @@
 "use client";
 
 import { buttonVariants } from "@/components/ui/button";
+import { useRoomLeave } from "@/lib/hooks/useRoomLeave";
 import { cn } from "@/lib/utils";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useQueryState } from "nuqs";
 import { api } from "../../../../convex/_generated/api";
 import ChatFooter from "./footer";
 import ChatHeader from "./header";
 import ChatMessages from "./messages";
-import { useRoomLeave } from "@/lib/hooks/useRoomLeave";
-import { useQueryState } from "nuqs";
 
 export default function Chat({ roomId }: { roomId: string }) {
   const [username] = useQueryState("username", { defaultValue: "" });

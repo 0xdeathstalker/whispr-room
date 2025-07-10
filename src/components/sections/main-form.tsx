@@ -4,7 +4,6 @@ import RoomIdInput from "@/components/sections/roomid-input";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -164,10 +163,6 @@ export default function MainForm() {
               {isCreateRoomMutationPending ? <LoaderCircle className="animate-spin" /> : null}
               create a room
             </Button>
-
-            <Label className="text-muted-foreground mt-2 justify-center text-xs">
-              create room and share it with others.
-            </Label>
           </div>
         </form>
       </Form>
