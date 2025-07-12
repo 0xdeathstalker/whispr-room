@@ -74,8 +74,8 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
 
 ## Future Improvements
 
+- [x] allow media sharing (images, videos, audio)
 - [ ] auto join if the user visits the url containing valid roomId and username
-- [ ] allow media sharing
 - [ ] UI revamp
 - [ ] timer countdown improvement using framer motion
 
