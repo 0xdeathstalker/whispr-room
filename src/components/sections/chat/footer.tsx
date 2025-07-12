@@ -2,14 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useUploadThing } from "@/context/uploadthing-provider";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
-import { LoaderCircle, Paperclip, Send } from "lucide-react";
+import { LoaderCircle, Send } from "lucide-react";
 import { useQueryState } from "nuqs";
 import * as React from "react";
-import { api } from "../../../../convex/_generated/api";
-import { useUploadThing } from "@/context/uploadthing-provider";
 import { toast } from "sonner";
+import { api } from "../../../../convex/_generated/api";
+import MediaUpload from "./media-upload";
 
 export default function ChatFooter(props: { roomId: string }) {
   const [message, setMessage] = React.useState<string>("");
@@ -69,42 +70,23 @@ export default function ChatFooter(props: { roomId: string }) {
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "Enter") handleSendMessage();
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      handleSendMessage();
+    }
   }
 
   const canSendMessage = (message.trim() || mediaUrl) && !isSendMessagePending;
+  const isUploadDisabled = isUploading || isSendMessagePending;
 
   return (
     <div className="flex items-center gap-2 pt-2">
-      <div className="relative">
-        <input
-          type="file"
-          id="media-upload"
-          className="hidden"
-          accept="image/*,video/*,audio/*"
-          onChange={handleFileSelect}
-          disabled={isUploading || isSendMessagePending}
-        />
-        <label htmlFor="media-upload">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            disabled={isUploading || isSendMessagePending}
-            asChild
-          >
-            <span>
-              {isUploading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
-            </span>
-          </Button>
-        </label>
-        {mediaUrl && (
-          <div
-            className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-green-500"
-            title="Media ready to send"
-          />
-        )}
-      </div>
+      <MediaUpload
+        mediaUrl={mediaUrl}
+        handleFileSelect={handleFileSelect}
+        isUploading={isUploading}
+        isDisabled={isUploadDisabled}
+      />
 
       <Input
         placeholder="type your message..."
