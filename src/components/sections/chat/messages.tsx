@@ -14,6 +14,39 @@ export default function ChatMessages(props: { roomId: string }) {
 
   const containerRef = React.useRef<HTMLDivElement>(null);
 
+  function renderMedia(mediaUrl: string, mediaType: string) {
+    if (mediaType.startsWith("image/")) {
+      return (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={mediaUrl}
+          alt="shared image"
+          className="max-h-48 max-w-full rounded-md object-contain"
+        />
+      );
+    } else if (mediaType.startsWith("video/")) {
+      return (
+        <video
+          src={mediaUrl}
+          controls
+          className="max-w-full, max-h-48 rounded-md"
+        >
+          your browser does not support the video tag
+        </video>
+      );
+    } else if (mediaType.startsWith("audio/")) {
+      return (
+        <audio
+          src={mediaUrl}
+          controls
+          className="w-full"
+        >
+          Your browser does not support the tag audio.
+        </audio>
+      );
+    }
+  }
+
   React.useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTo({
@@ -58,6 +91,7 @@ export default function ChatMessages(props: { roomId: string }) {
                 )}
               </div>
               <div className="text-secondary-foreground text-sm break-words">{m.content}</div>
+              {m.mediaUrl && m.mediaType && <div className="mt-2">{renderMedia(m.mediaUrl, m.mediaType)}</div>}
             </div>
           );
         }

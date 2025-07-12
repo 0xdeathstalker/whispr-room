@@ -20,5 +20,7 @@ export default defineSchema({
     content: v.string(),
     createdAt: v.number(),
     isSystem: v.optional(v.boolean()),
+    mediaType: v.optional(v.string()),
+    mediaUrl: v.optional(v.string()),
   }),
 });
