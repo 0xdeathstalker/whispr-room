@@ -2,8 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getDocIcon, getDocLabel, getDocSize } from "@/lib/actions/getDocActions";
 import { cn } from "@/lib/utils";
-import { AlertCircle, Download, ExternalLink, File, FileSpreadsheet, FileText } from "lucide-react";
+import { AlertCircle, Download, ExternalLink, File } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 
@@ -14,32 +15,12 @@ type MediaContentProps = {
   mediaSize: number | undefined;
 };
 
-function getDocIcon(type: string) {
-  if (type.includes("word")) return <FileText className="h-6 w-6" />;
-  if (type.includes("excel") || type.includes("spreadsheet")) return <FileSpreadsheet className="h-6 w-6" />;
-  if (type.includes("powerpoint") || type.includes("presentation")) return <FileText className="h-6 w-6" />;
-  if (type.includes("pdf")) return <FileText className="h-6 w-6" />;
-  if (type.includes("csv")) return <FileSpreadsheet className="h-6 w-6" />;
-  if (type.startsWith("text/")) return <FileText className="h-6 w-6" />;
-  return <File className="h-6 w-6" />;
-}
-
-function getDocLabel(type: string) {
-  if (type.includes("word")) return "Microsoft Word Document";
-  if (type.includes("excel") || type.includes("spreadsheet")) return "Microsoft Excel Spreadsheet";
-  if (type.includes("powerpoint") || type.includes("presentation")) return "PowerPoint Presentation";
-  if (type.includes("pdf")) return "PDF Document";
-  if (type.includes("csv")) return "CSV File";
-  if (type.startsWith("text/")) return "Text File";
-  return "Document";
-}
-
-function formatSize(size?: number) {
-  if (!size) return "Unknown size";
-  if (size > 1e6) return (size / 1e6).toFixed(1) + " MB";
-  if (size > 1e3) return (size / 1e3).toFixed(1) + " KB";
-  return size + " bytes";
-}
+type DocumentProps = {
+  name: string | undefined;
+  size: number | undefined;
+  type: string;
+  url: string;
+};
 
 export default function MediaContent({ mediaUrl, mediaType, mediaName, mediaSize }: MediaContentProps) {
   const [isLoading, setIsLoading] = React.useState(true);
@@ -60,7 +41,6 @@ export default function MediaContent({ mediaUrl, mediaType, mediaName, mediaSize
     setHasError(false);
   };
 
-  // Document preview card for docs (not images, video, audio)
   const isDoc =
     mediaType.includes("word") ||
     mediaType.includes("excel") ||
@@ -74,46 +54,12 @@ export default function MediaContent({ mediaUrl, mediaType, mediaName, mediaSize
 
   if (isDoc) {
     return (
-      <div className="bg-muted flex flex-col gap-2 rounded-md p-3">
-        <div className="flex items-center gap-3">
-          {getDocIcon(mediaType)}
-          <div>
-            <div className="mb-1 text-sm font-medium break-all">{mediaName ?? "Document"}</div>
-            <div className="text-muted-foreground text-xs">
-              {formatSize(mediaSize)}, {getDocLabel(mediaType)}
-            </div>
-          </div>
-        </div>
-        <div className="mt-2 flex justify-end gap-2">
-          <a
-            href={mediaUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button
-              size="sm"
-              variant="outline"
-              className="text-xs"
-            >
-              <ExternalLink className="mr-1 h-3 w-3" />
-              Open
-            </Button>
-          </a>
-          <Link
-            href={mediaUrl}
-            target="_blank"
-          >
-            <Button
-              size="sm"
-              variant="outline"
-              className="text-xs"
-            >
-              <Download className="mr-1 h-3 w-3" />
-              Save as
-            </Button>
-          </Link>
-        </div>
-      </div>
+      <Document
+        name={mediaName}
+        size={mediaSize}
+        type={mediaType}
+        url={mediaUrl}
+      />
     );
   }
 
@@ -180,38 +126,12 @@ export default function MediaContent({ mediaUrl, mediaType, mediaName, mediaSize
     </div>
   );
 
-  const renderPDF = () => (
-    <div className="relative">
-      {isLoading && renderLoadingState()}
-      {hasError && renderErrorState("PDF")}
-      <iframe
-        src={mediaUrl}
-        className={cn("h-96 w-full rounded-md border", isLoading || hasError ? "hidden" : "")}
-        onLoad={handleMediaLoad}
-        onError={handleMediaError}
-      >
-        <p>
-          Your browser does not support PDFs.{" "}
-          <a
-            href={mediaUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Download PDF
-          </a>
-        </p>
-      </iframe>
-    </div>
-  );
-
   if (mediaType.startsWith("image/")) {
     return renderImage();
   } else if (mediaType.startsWith("video/")) {
     return renderVideo();
   } else if (mediaType.startsWith("audio/")) {
     return renderAudio();
-  } else if (mediaType === "application/pdf") {
-    return renderPDF();
   }
 
   return (
@@ -219,6 +139,55 @@ export default function MediaContent({ mediaUrl, mediaType, mediaName, mediaSize
       <div className="flex flex-col items-center gap-2">
         <File className="h-6 w-6" />
         <span className="text-muted-foreground text-xs">File shared</span>
+      </div>
+    </div>
+  );
+}
+
+function Document({ name, size, type, url }: DocumentProps) {
+  const DocIcon = getDocIcon(type);
+  const docSize = getDocSize(size);
+  const docLabel = getDocLabel(type);
+
+  return (
+    <div className="bg-muted flex flex-col gap-2 rounded-md p-3">
+      <div className="flex items-center gap-3">
+        <DocIcon className="text-secondary-foreground/80 h-6 w-6" />
+        <div>
+          <div className="text-secondary-foreground mb-1 text-sm break-all">{name ?? "Document"}</div>
+          <div className="text-muted-foreground text-xs">
+            {docSize}, {docLabel}
+          </div>
+        </div>
+      </div>
+      <div className="mt-2 flex justify-end gap-2">
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-secondary-foreground text-xs"
+          >
+            <ExternalLink className="mr-1 h-3 w-3" />
+            Open
+          </Button>
+        </a>
+        <Link
+          href={url}
+          target="_blank"
+        >
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-secondary-foreground text-xs"
+          >
+            <Download className="mr-1 h-3 w-3" />
+            Save as
+          </Button>
+        </Link>
       </div>
     </div>
   );
