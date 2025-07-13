@@ -8,6 +8,8 @@ export const sendMessage = mutation({
     content: v.string(),
     mediaType: v.optional(v.string()),
     mediaUrl: v.optional(v.string()),
+    mediaSize: v.optional(v.number()),
+    mediaName: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const room = await ctx.db
@@ -35,6 +37,8 @@ export const sendMessage = mutation({
       createdAt: Date.now(),
       mediaType: args.mediaType,
       mediaUrl: args.mediaUrl,
+      mediaSize: args.mediaSize,
+      mediaName: args.mediaName,
     });
   },
 });

@@ -16,6 +16,8 @@ export default function ChatFooter(props: { roomId: string }) {
   const [message, setMessage] = React.useState<string>("");
   const [mediaUrl, setMediaUrl] = React.useState<string>("");
   const [mediaType, setMediaType] = React.useState<string>("");
+  const [mediaName, setMediaName] = React.useState<string>("");
+  const [mediaSize, setMediaSize] = React.useState<number>(0);
   const [isUploading, setIsUploading] = React.useState<boolean>(false);
 
   const [username] = useQueryState("username", { defaultValue: "" });
@@ -27,6 +29,8 @@ export default function ChatFooter(props: { roomId: string }) {
       setMessage("");
       setMediaUrl("");
       setMediaType("");
+      setMediaName("");
+      setMediaSize(0);
     },
   });
 
@@ -37,7 +41,9 @@ export default function ChatFooter(props: { roomId: string }) {
         const file = response[0];
         setMediaType(file.type);
         setMediaUrl(file.ufsUrl);
-        toast.success("media uploaded successfully!");
+        setMediaSize(file.size);
+        setMediaName(file.name);
+        toast.success("uploaded successfully!");
       }
     },
     onUploadError: (error: Error) => {
@@ -63,9 +69,11 @@ export default function ChatFooter(props: { roomId: string }) {
     sendMessage({
       roomId: props.roomId,
       username,
-      content: message ?? (mediaUrl ? "Media shared" : ""),
+      content: message,
       mediaUrl: mediaUrl ?? undefined,
       mediaType: mediaType ?? undefined,
+      mediaName: mediaName ?? undefined,
+      mediaSize: mediaSize ?? undefined,
     });
   }
 

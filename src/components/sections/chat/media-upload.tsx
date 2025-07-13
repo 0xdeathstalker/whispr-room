@@ -15,7 +15,7 @@ export default function MediaUpload({ mediaUrl, isUploading, isDisabled, handleF
         type="file"
         id="media-upload"
         className="hidden"
-        accept="image/*,video/*,audio/*"
+        accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.rtf,.ppt,.pptx"
         onChange={handleFileSelect}
         disabled={isDisabled}
       />
@@ -35,7 +35,7 @@ export default function MediaUpload({ mediaUrl, isUploading, isDisabled, handleF
       {mediaUrl && (
         <div
           className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-green-500"
-          title="Media ready to send"
+          title="File ready to send"
         />
       )}
     </div>

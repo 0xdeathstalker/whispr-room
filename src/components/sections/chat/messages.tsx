@@ -1,12 +1,12 @@
 "use client";
 
-import MediaContent from "@/components/sections/chat/media-content";
 import getSystemMessage from "@/lib/actions/getSystemMessage";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import * as React from "react";
 import { api } from "../../../../convex/_generated/api";
+import MediaContent from "./media-content";
 
 export default function ChatMessages(props: { roomId: string }) {
   const [username] = useQueryState("username", { defaultValue: "" });
@@ -58,12 +58,14 @@ export default function ChatMessages(props: { roomId: string }) {
                   </span>
                 )}
               </div>
-              {m.content && <div className="text-secondary-foreground text-sm break-words">{m.content}</div>}
+              {m.content && <div className="text-secondary-foreground text-sm">{m.content}</div>}
               {m.mediaUrl && m.mediaType && (
                 <div className="mt-2">
                   <MediaContent
                     mediaUrl={m.mediaUrl}
                     mediaType={m.mediaType}
+                    mediaName={m.mediaName}
+                    mediaSize={m.mediaSize}
                   />
                 </div>
               )}

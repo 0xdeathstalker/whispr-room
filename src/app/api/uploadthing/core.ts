@@ -10,6 +10,9 @@ export const ourFileRouter = {
     image: { maxFileSize: "4MB" },
     video: { maxFileSize: "16MB" },
     audio: { maxFileSize: "8MB" },
+    pdf: { maxFileSize: "16MB" },
+    text: { maxFileSize: "4MB" },
+    blob: { maxFileSize: "16MB" },
   })
     .input(
       z.object({
@@ -38,6 +41,7 @@ export const ourFileRouter = {
         type: file.type,
         url: file.ufsUrl,
         name: file.name,
+        size: file.size,
       };
     }),
 } satisfies FileRouter;
