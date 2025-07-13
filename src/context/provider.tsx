@@ -1,8 +1,8 @@
 "use client";
 
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { type ReactNode } from "react";
 import QueryProvider from "./query-provider";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "./theme-provider";
 import UploadThingProvider from "./uploadthing-provider";
 

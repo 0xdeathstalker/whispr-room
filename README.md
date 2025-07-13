@@ -8,6 +8,7 @@ A disposable chat room for quick, ephemeral conversations.
 - Share room codes with others
 - Enter a username to participate
 - Real-time chat with participants
+- Share media files with others
 - See a list of current participants
 - Leave the room at any time
 
@@ -15,10 +16,11 @@ A disposable chat room for quick, ephemeral conversations.
 
 - [Next.js](https://nextjs.org/)
 - [React](https://react.dev/)
-- [Convex](https://convex.dev/) (for backend/database)
+- [Convex](https://convex.dev/)
 - [React Query](https://tanstack.com/query/latest)
 - [Zod](https://zod.dev/)
 - [Tailwind](https://tailwindcss.com/)
+- [Uploadthing](https://uploadthing.com/)
 
 ## Getting Started
 
@@ -52,7 +54,7 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
    Enter a room code and your username to join an existing room.
 
 3. **Chat:**  
-   Send messages, see participants, and leave the room when done.
+   Send messages, share any media files, see participants, and leave the room when done.
 
 ## App Sections
 
@@ -66,6 +68,7 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
 
 - Displays the room code and participants list.
 - Chat with others until the room expires.
+- Share media with them.
 - Leave the room at any time.
 
 <!-- ## Screenshots -->
@@ -75,9 +78,7 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
 ## Future Improvements
 
 - [x] allow media sharing (images, videos, audio)
-- [ ] auto join if the user visits the url containing valid roomId and username
-- [ ] UI revamp
-- [ ] timer countdown improvement using framer motion
+- [ ] explore AI integration (tidbit.ai)
 
 ## Contributing
 
