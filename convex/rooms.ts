@@ -14,8 +14,10 @@ export const createRoom = mutation({
     username: v.string(),
   },
   handler: async (ctx, args) => {
+    const expiryDuration = Number(process.env.EXPIRY_DURATION);
+
     const now = Date.now();
-    const expiresAt = now + 1800 * 1000; // TODO: move the duration to .env
+    const expiresAt = now + expiryDuration * 1000;
 
     const roomId = generateRoomID();
 
@@ -133,7 +135,7 @@ export const cleanExpiredRoom = internalMutation({
         }
         await ctx.db.delete(message._id);
       }
-      console.log("[uploaded-files] = ", { uploadedFileKeys });
+
       await ctx.scheduler.runAfter(0, internal.rooms.deleteUploadedFilesAction, { fileKeys: uploadedFileKeys });
 
       await ctx.db.delete(room._id);
@@ -147,7 +149,6 @@ export const deleteUploadedFilesAction = internalAction({
   args: { fileKeys: v.array(v.string()) },
   handler: async (ctx, args) => {
     const uploadThingSecret = process.env.UPLOADTHING_SECRET;
-    console.log("[deleteFiles] = ", { uploadThingSecret, fileKeys: args.fileKeys });
 
     if (!uploadThingSecret) {
       console.warn("UPLOADTHING_SECRET not found, skipping file deletion");
@@ -177,7 +178,7 @@ export const deleteUploadedFilesAction = internalAction({
         throw new Error(`Failed to delete files: ${response.status} ${errorText}`);
       }
 
-      const result = await response.json();
+      const result: unknown = await response.json();
       console.log("Files deleted successfully: ", result);
 
       return {

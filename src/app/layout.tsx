@@ -16,7 +16,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Whispr Room",
-  description: "A disposable chat room", // TODO: improve the description
+  description:
+    "Create instant, disposable chat rooms for private conversations and file sharing. Rooms and messages are automatically deleted after a set time, ensuring privacy and a clutter-free experience",
 };
 
 export default function RootLayout({

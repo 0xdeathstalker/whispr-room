@@ -23,16 +23,11 @@ export const ourFileRouter = {
     // Set permissions and file types for this FileRoute
     .middleware(async ({ input }) => {
       // This code runs on your server before upload
-      console.log("[uploadthing middleware] = ", { roomId: input.roomId, username: input.username });
-
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { roomId: input.roomId, username: input.username };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
-      console.log("[uploadthing] Upload completed for = ", { room: metadata.roomId, username: metadata.username });
-      console.log("[uploadthing] file type = ", file.type);
-      console.log("[uploadthing] file url = ", file.ufsUrl);
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       return {
