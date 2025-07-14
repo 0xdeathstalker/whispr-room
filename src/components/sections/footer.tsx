@@ -8,8 +8,6 @@ export default function Footer() {
   const { theme, setTheme } = useTheme();
 
   function handleToggle() {
-    console.log("theme = ", { theme });
-
     const getSystemTheme = () => {
       return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     };

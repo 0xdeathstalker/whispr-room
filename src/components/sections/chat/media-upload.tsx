@@ -34,7 +34,7 @@ export default function MediaUpload({ mediaUrl, isUploading, isDisabled, handleF
       </label>
       {mediaUrl && (
         <div
-          className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-green-500"
+          className="bg-primary absolute -top-1 -right-1 h-3 w-3 rounded-full"
           title="File ready to send"
         />
       )}

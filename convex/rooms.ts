@@ -1,6 +1,6 @@
 import { v } from "convex/values";
-import { EXPIRY_DURATION } from "../src/lib/constants";
-import { internalMutation, mutation, query } from "./_generated/server";
+import { internal } from "./_generated/api";
+import { internalAction, internalMutation, mutation, query } from "./_generated/server";
 
 function generateRoomID(length = 6) {
   return Math.random()
@@ -15,7 +15,7 @@ export const createRoom = mutation({
   },
   handler: async (ctx, args) => {
     const now = Date.now();
-    const expiresAt = now + EXPIRY_DURATION * 1000;
+    const expiresAt = now + 1800 * 1000; // TODO: move the duration to .env
 
     const roomId = generateRoomID();
 
@@ -109,6 +109,8 @@ export const cleanExpiredRoom = internalMutation({
       .filter((q) => q.lt(q.field("expiresAt"), now))
       .collect();
 
+    const uploadedFileKeys: string[] = [];
+
     for (const room of expiredRooms) {
       const participants = await ctx.db
         .query("participants")
@@ -123,12 +125,69 @@ export const cleanExpiredRoom = internalMutation({
         .filter((q) => q.eq(q.field("roomId"), room._id))
         .collect();
       for (const message of messages) {
+        if (!message.isSystem) {
+          const fileKey = message.mediaUrl?.split("/f/")[1];
+          if (fileKey) {
+            uploadedFileKeys.push(fileKey);
+          }
+        }
         await ctx.db.delete(message._id);
       }
+      console.log("[uploaded-files] = ", { uploadedFileKeys });
+      await ctx.scheduler.runAfter(0, internal.rooms.deleteUploadedFilesAction, { fileKeys: uploadedFileKeys });
 
       await ctx.db.delete(room._id);
     }
 
     console.log(`Cleaned up ${expiredRooms.length} expired rooms.`);
+  },
+});
+
+export const deleteUploadedFilesAction = internalAction({
+  args: { fileKeys: v.array(v.string()) },
+  handler: async (ctx, args) => {
+    const uploadThingSecret = process.env.UPLOADTHING_SECRET;
+    console.log("[deleteFiles] = ", { uploadThingSecret, fileKeys: args.fileKeys });
+
+    if (!uploadThingSecret) {
+      console.warn("UPLOADTHING_SECRET not found, skipping file deletion");
+      return { success: false, deletedCount: 0, error: "No secret key configured" };
+    }
+
+    if (args.fileKeys.length === 0) {
+      console.log("No file keys provided for deletion");
+      return { success: true, deletedCount: 0 };
+    }
+
+    try {
+      const response = await fetch("https://api.uploadthing.com/v6/deleteFiles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Uploadthing-Api-Key": uploadThingSecret,
+        },
+        body: JSON.stringify({
+          fileKeys: args.fileKeys,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Uploadthing API error: ", response.status, errorText);
+        throw new Error(`Failed to delete files: ${response.status} ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log("Files deleted successfully: ", result);
+
+      return {
+        success: true,
+        deletedCount: args.fileKeys.length,
+        result,
+      };
+    } catch (error) {
+      console.error("Error deleting files from Uploadthing: ", error);
+      throw error;
+    }
   },
 });
