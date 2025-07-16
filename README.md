@@ -77,7 +77,7 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
 
 ## Future Improvements
 
-- [x] allow media sharing (images, videos, audio)
+- [x] allow media sharing (images, videos, audio, files)
 - [ ] explore AI integration (tidbit.ai)
 
 ## Contributing
