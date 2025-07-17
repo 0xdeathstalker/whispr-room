@@ -1,5 +1,7 @@
 "use client";
 
+import CreateButton from "@/components/sections/create-button";
+import JoinButton from "@/components/sections/join-button";
 import RoomIdInput from "@/components/sections/roomid-input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -14,8 +16,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { api } from "../../../convex/_generated/api";
-import CreateButton from "./create-button";
-import JoinButton from "./join-button";
 
 const formSchema = z.object({
   username: z.string().min(3, { message: "username should be atleast 3 characters" }),

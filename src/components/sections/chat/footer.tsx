@@ -1,23 +1,20 @@
 "use client";
 
+import MediaUpload from "@/components/sections/chat/media-upload";
+import SendButton from "@/components/sections/chat/send-button";
 import { Input } from "@/components/ui/input";
 import { useUploadThing } from "@/context/uploadthing-provider";
-import type { ButtonState } from "@/lib/types";
+import type { ButtonState, Media } from "@/lib/types";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import * as React from "react";
 import { toast } from "sonner";
 import { api } from "../../../../convex/_generated/api";
-import MediaUpload from "./media-upload";
-import SendButton from "./send-button";
 
 export default function ChatFooter(props: { roomId: string }) {
   const [message, setMessage] = React.useState<string>("");
-  const [mediaUrl, setMediaUrl] = React.useState<string>("");
-  const [mediaType, setMediaType] = React.useState<string>("");
-  const [mediaName, setMediaName] = React.useState<string>("");
-  const [mediaSize, setMediaSize] = React.useState<number>(0);
+  const [media, setMedia] = React.useState<Media>({ url: "", type: "", name: "", size: 0 });
   const [isUploading, setIsUploading] = React.useState<boolean>(false);
 
   const [uploadButtonState, setUploadButtonState] = React.useState<ButtonState>("idle");
@@ -26,14 +23,11 @@ export default function ChatFooter(props: { roomId: string }) {
   const [username] = useQueryState("username", { defaultValue: "" });
 
   const { mutate: sendMessage, isPending: isSendMessagePending } = useMutation({
-    mutationKey: ["sendMessage", message, mediaUrl],
+    mutationKey: ["sendMessage", message, media.url],
     mutationFn: useConvexMutation(api.messages.sendMessage),
     onSuccess: () => {
       setMessage("");
-      setMediaUrl("");
-      setMediaType("");
-      setMediaName("");
-      setMediaSize(0);
+      setMedia({ url: "", type: "", name: "", size: 0 });
       setUploadButtonState("success");
       setSendButtonState("success");
     },
@@ -48,10 +42,7 @@ export default function ChatFooter(props: { roomId: string }) {
       setIsUploading(false);
       if (response[0]) {
         const file = response[0];
-        setMediaType(file.type);
-        setMediaUrl(file.ufsUrl);
-        setMediaSize(file.size);
-        setMediaName(file.name);
+        setMedia({ url: file.ufsUrl, type: file.type, name: file.name, size: file.size });
         setUploadButtonState("success");
         toast.success("uploaded successfully!");
       }
@@ -74,16 +65,16 @@ export default function ChatFooter(props: { roomId: string }) {
   );
 
   function handleSendMessage() {
-    if (!message.trim() && !mediaUrl) return;
+    if (!message.trim() && !media.url) return;
 
     sendMessage({
       roomId: props.roomId,
       username,
       content: message,
-      mediaUrl: mediaUrl ?? undefined,
-      mediaType: mediaType ?? undefined,
-      mediaName: mediaName ?? undefined,
-      mediaSize: mediaSize ?? undefined,
+      mediaUrl: media.url ?? undefined,
+      mediaType: media.type ?? undefined,
+      mediaName: media.name ?? undefined,
+      mediaSize: media.size ?? undefined,
     });
   }
 
@@ -94,13 +85,13 @@ export default function ChatFooter(props: { roomId: string }) {
     }
   }
 
-  const canSendMessage = Boolean((message.trim() || mediaUrl) && !isSendMessagePending);
+  const canSendMessage = Boolean((message.trim() || media.url) && !isSendMessagePending);
   const isUploadDisabled = isUploading || isSendMessagePending;
 
   return (
     <div className="flex items-center gap-2 pt-2">
       <MediaUpload
-        mediaUrl={mediaUrl}
+        mediaUrl={media.url}
         isUploading={isUploading}
         isDisabled={isUploadDisabled}
         handleFileSelect={handleFileSelect}

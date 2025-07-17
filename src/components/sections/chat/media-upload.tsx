@@ -3,8 +3,7 @@
 import { Button } from "@/components/ui/button";
 import type { ButtonState } from "@/lib/types";
 import { LoaderCircle, Paperclip } from "lucide-react";
-import { AnimatePresence } from "motion/react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
 
 type MediaUploadProps = {

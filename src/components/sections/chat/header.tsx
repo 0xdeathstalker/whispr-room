@@ -1,6 +1,7 @@
 "use client";
 
 import CopyButton from "@/components/copy-button";
+import LeaveButton from "@/components/sections/chat/leave-button";
 import Timer from "@/components/timer";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +21,6 @@ import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import * as React from "react";
 import { api } from "../../../../convex/_generated/api";
-import LeaveButton from "./leave-button";
 
 export default function ChatHeader(props: { roomId: string }) {
   const [leaveButtonState, setLeaveButtonState] = React.useState<ButtonState>("idle");

@@ -1,5 +1,8 @@
 "use client";
 
+import ChatFooter from "@/components/sections/chat/footer";
+import ChatHeader from "@/components/sections/chat/header";
+import ChatMessages from "@/components/sections/chat/messages";
 import { buttonVariants } from "@/components/ui/button";
 import { useRoomLeave } from "@/lib/hooks/useRoomLeave";
 import { cn } from "@/lib/utils";
@@ -8,9 +11,6 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useQueryState } from "nuqs";
 import { api } from "../../../../convex/_generated/api";
-import ChatFooter from "./footer";
-import ChatHeader from "./header";
-import ChatMessages from "./messages";
 
 export default function Chat({ roomId }: { roomId: string }) {
   const [username] = useQueryState("username", { defaultValue: "" });

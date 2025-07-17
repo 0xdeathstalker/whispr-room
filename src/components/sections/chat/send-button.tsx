@@ -1,11 +1,10 @@
 "use client";
 
-import * as React from "react";
-import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
-import { AnimatePresence } from "motion/react";
 import type { ButtonState } from "@/lib/types";
 import { LoaderCircle, Send } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import * as React from "react";
 
 const BUTTON_STATES = {
   idle: <Send className="h-3 w-3" />,
