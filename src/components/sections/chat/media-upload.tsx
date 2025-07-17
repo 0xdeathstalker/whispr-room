@@ -1,14 +1,40 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
+import type { ButtonState } from "@/lib/types";
 import { LoaderCircle, Paperclip } from "lucide-react";
+import { AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
+import * as React from "react";
 
 type MediaUploadProps = {
   mediaUrl: string;
   isUploading: boolean;
   isDisabled: boolean;
   handleFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  buttonState: ButtonState;
+  setButtonState: React.Dispatch<React.SetStateAction<ButtonState>>;
 };
 
-export default function MediaUpload({ mediaUrl, isUploading, isDisabled, handleFileSelect }: MediaUploadProps) {
+const BUTTON_STATES = {
+  idle: <Paperclip className="h-4 w-4" />,
+  loading: <LoaderCircle className="h-4 w-4 animate-spin" />,
+  success: <Paperclip className="h-4 w-4" />,
+};
+
+export default function MediaUpload({
+  mediaUrl,
+  isUploading,
+  isDisabled,
+  handleFileSelect,
+  buttonState,
+  setButtonState,
+}: MediaUploadProps) {
+  React.useEffect(() => {
+    if (isUploading) setButtonState("loading");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isUploading]);
+
   return (
     <div className="relative">
       <input
@@ -23,13 +49,25 @@ export default function MediaUpload({ mediaUrl, isUploading, isDisabled, handleF
         <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8"
           disabled={isDisabled}
           asChild
         >
-          <span>
-            {isUploading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
-          </span>
+          <div>
+            <AnimatePresence
+              mode="popLayout"
+              initial={false}
+            >
+              <motion.span
+                key={buttonState}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+              >
+                {BUTTON_STATES[buttonState]}
+              </motion.span>
+            </AnimatePresence>
+          </div>
         </Button>
       </label>
       {mediaUrl && (

@@ -1,19 +1,21 @@
 "use client";
 
 import RoomIdInput from "@/components/sections/roomid-input";
-import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import type { ButtonState } from "@/lib/types";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { ArrowRight, LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import * as React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { api } from "../../../convex/_generated/api";
+import CreateButton from "./create-button";
+import JoinButton from "./join-button";
 
 const formSchema = z.object({
   username: z.string().min(3, { message: "username should be atleast 3 characters" }),
@@ -23,6 +25,9 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function MainForm() {
+  const [createButtonState, setCreateButtonState] = React.useState<ButtonState>("idle");
+  const [joinButtonState, setJoinButtonState] = React.useState<ButtonState>("idle");
+
   const router = useRouter();
 
   const form = useForm<FormValues>({
@@ -38,10 +43,12 @@ export default function MainForm() {
     mutationFn: useConvexMutation(api.rooms.createRoom),
     onSuccess: (data: { roomId: string }) => {
       if (data?.roomId) {
+        setCreateButtonState("success");
         router.push(`/room/${data.roomId}?username=${encodeURIComponent(form.getValues("username"))}`);
       }
     },
     onError: (error) => {
+      setCreateButtonState("idle");
       toast(`error: ${error.message}`);
     },
   });
@@ -51,10 +58,12 @@ export default function MainForm() {
     mutationFn: useConvexMutation(api.participants.joinRoom),
     onSuccess: (data: { roomId: string }) => {
       if (data?.roomId) {
+        setJoinButtonState("success");
         router.push(`/room/${data.roomId}?username=${encodeURIComponent(form.getValues("username"))}`);
       }
     },
     onError: (error) => {
+      setJoinButtonState("idle");
       toast(
         `error: ${error.message.includes("Room doesn't exist or has expired") ? "Room has expired" : `${error.message}`}`,
       );
@@ -125,20 +134,13 @@ export default function MainForm() {
                       onChange={field.onChange}
                     />
 
-                    <div className="w-full">
-                      <Button
-                        variant="outline"
-                        className="w-full"
-                        disabled={isJoinRoomMutationPending}
+                    <div className="w-full overflow-y-hidden">
+                      <JoinButton
+                        buttonState={joinButtonState}
+                        setButtonState={setJoinButtonState}
+                        isJoinRoomMutationPending={isJoinRoomMutationPending}
                         onClick={form.handleSubmit(handleJoinRoom)}
-                      >
-                        {isJoinRoomMutationPending ? (
-                          <LoaderCircle className="animate-spin" />
-                        ) : (
-                          <ArrowRight className="xs:hidden h-3 w-3" />
-                        )}
-                        <span className="xs:inline hidden">join</span>
-                      </Button>
+                      />
                     </div>
                   </div>
                 </FormControl>
@@ -155,14 +157,11 @@ export default function MainForm() {
           <Separator />
 
           <div className="w-full">
-            <Button
-              className="w-full"
-              type="submit"
-              disabled={isCreateRoomMutationPending}
-            >
-              {isCreateRoomMutationPending ? <LoaderCircle className="animate-spin" /> : null}
-              create a room
-            </Button>
+            <CreateButton
+              buttonState={createButtonState}
+              setButtonState={setCreateButtonState}
+              isCreateRoomMutationPending={isCreateRoomMutationPending}
+            />
           </div>
         </form>
       </Form>

@@ -1,16 +1,16 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUploadThing } from "@/context/uploadthing-provider";
+import type { ButtonState } from "@/lib/types";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
-import { LoaderCircle, Send } from "lucide-react";
 import { useQueryState } from "nuqs";
 import * as React from "react";
 import { toast } from "sonner";
 import { api } from "../../../../convex/_generated/api";
 import MediaUpload from "./media-upload";
+import SendButton from "./send-button";
 
 export default function ChatFooter(props: { roomId: string }) {
   const [message, setMessage] = React.useState<string>("");
@@ -19,6 +19,9 @@ export default function ChatFooter(props: { roomId: string }) {
   const [mediaName, setMediaName] = React.useState<string>("");
   const [mediaSize, setMediaSize] = React.useState<number>(0);
   const [isUploading, setIsUploading] = React.useState<boolean>(false);
+
+  const [uploadButtonState, setUploadButtonState] = React.useState<ButtonState>("idle");
+  const [sendButtonState, setSendButtonState] = React.useState<ButtonState>("idle");
 
   const [username] = useQueryState("username", { defaultValue: "" });
 
@@ -31,6 +34,12 @@ export default function ChatFooter(props: { roomId: string }) {
       setMediaType("");
       setMediaName("");
       setMediaSize(0);
+      setUploadButtonState("success");
+      setSendButtonState("success");
+    },
+    onError: () => {
+      setUploadButtonState("idle");
+      setSendButtonState("idle");
     },
   });
 
@@ -43,6 +52,7 @@ export default function ChatFooter(props: { roomId: string }) {
         setMediaUrl(file.ufsUrl);
         setMediaSize(file.size);
         setMediaName(file.name);
+        setUploadButtonState("success");
         toast.success("uploaded successfully!");
       }
     },
@@ -84,16 +94,18 @@ export default function ChatFooter(props: { roomId: string }) {
     }
   }
 
-  const canSendMessage = (message.trim() || mediaUrl) && !isSendMessagePending;
+  const canSendMessage = Boolean((message.trim() || mediaUrl) && !isSendMessagePending);
   const isUploadDisabled = isUploading || isSendMessagePending;
 
   return (
     <div className="flex items-center gap-2 pt-2">
       <MediaUpload
         mediaUrl={mediaUrl}
-        handleFileSelect={handleFileSelect}
         isUploading={isUploading}
         isDisabled={isUploadDisabled}
+        handleFileSelect={handleFileSelect}
+        buttonState={uploadButtonState}
+        setButtonState={setUploadButtonState}
       />
 
       <Input
@@ -104,13 +116,14 @@ export default function ChatFooter(props: { roomId: string }) {
         disabled={isSendMessagePending}
         onKeyDown={handleKeyDown}
       />
-      <Button
-        size="icon"
-        disabled={!canSendMessage}
-        onClick={handleSendMessage}
-      >
-        {isSendMessagePending ? <LoaderCircle className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
-      </Button>
+
+      <SendButton
+        buttonState={sendButtonState}
+        setButtonState={setSendButtonState}
+        canSendMessage={canSendMessage}
+        isSendMessagePending={isSendMessagePending}
+        handleSendMessage={handleSendMessage}
+      />
     </div>
   );
 }

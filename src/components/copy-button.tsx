@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckIcon, CopyIcon } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
 import { useCopyToClipboard } from "usehooks-ts";
 
@@ -31,12 +32,33 @@ export default function CopyButton({ textToCopy, children }: CopyButtonProps) {
       className="dark:hover:bg-accent/50 hover:bg-accent hover:text-accent-foreground inline-flex size-5 cursor-pointer items-center justify-center rounded-sm"
       onClick={handleCopy}
     >
-      {isCopied ? (
-        <CheckIcon className="text-muted-foreground h-3 w-3" />
-      ) : (
-        <CopyIcon className="text-muted-foreground h-3 w-3" />
-      )}
-      {children}
+      <AnimatePresence
+        mode="popLayout"
+        initial={false}
+      >
+        {isCopied ? (
+          <motion.span
+            key="check"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+          >
+            <CheckIcon className="text-muted-foreground h-3 w-3" />
+          </motion.span>
+        ) : (
+          <motion.span
+            key="copy"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+          >
+            <CopyIcon className="text-muted-foreground h-3 w-3" />
+          </motion.span>
+        )}
+        {children}
+      </AnimatePresence>
     </button>
   );
 }
