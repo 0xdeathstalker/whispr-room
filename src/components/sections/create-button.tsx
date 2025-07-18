@@ -36,9 +36,9 @@ export default function CreateButton({ buttonState, setButtonState, isCreateRoom
       >
         <motion.span
           key={buttonState}
-          initial={{ y: -100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
+          initial={{ y: -100, filter: "blur(12px)", opacity: 0 }}
+          animate={{ y: 0, filter: "blur(0px)", opacity: 1 }}
+          exit={{ y: 100, filter: "blur(12px)", opacity: 0 }}
           transition={{ type: "spring", bounce: 0, duration: 0.3 }}
         >
           {BUTTON_STATES[buttonState]}

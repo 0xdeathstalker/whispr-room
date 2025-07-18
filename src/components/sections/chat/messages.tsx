@@ -1,12 +1,12 @@
 "use client";
 
+import MediaContent from "@/components/sections/chat/media-content";
 import getSystemMessage from "@/lib/actions/getSystemMessage";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import * as React from "react";
 import { api } from "../../../../convex/_generated/api";
-import MediaContent from "./media-content";
 
 export default function ChatMessages(props: { roomId: string }) {
   const [username] = useQueryState("username", { defaultValue: "" });
@@ -51,7 +51,7 @@ export default function ChatMessages(props: { roomId: string }) {
               className="bg-secondary flex flex-col gap-1 rounded-md px-3 py-2 shadow-xs"
             >
               <div className="text-muted-foreground flex items-center justify-between gap-2 text-xs font-semibold">
-                <span>@{m.username}</span>
+                <span>@{m.username === username ? "you" : m.username}</span>
                 {m.createdAt && (
                   <span className="text-muted-foreground text-[10px]">
                     {new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}

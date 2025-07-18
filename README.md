@@ -21,6 +21,7 @@ A disposable chat room for quick, ephemeral conversations.
 - [Zod](https://zod.dev/)
 - [Tailwind](https://tailwindcss.com/)
 - [Uploadthing](https://uploadthing.com/)
+- [Motion](https://motion.dev/)
 
 ## Getting Started
 
