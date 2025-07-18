@@ -79,6 +79,7 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
 ## Future Improvements
 
 - [x] allow media sharing (images, videos, audio, files)
+- [ ] integrate posthog for analytics
 - [ ] explore AI integration (tidbit.ai)
 
 ## Contributing
