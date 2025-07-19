@@ -8,11 +8,14 @@ import type { ButtonState, Media } from "@/lib/types";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
+import { usePostHog } from "posthog-js/react";
 import * as React from "react";
 import { toast } from "sonner";
 import { api } from "../../../../convex/_generated/api";
 
 export default function ChatFooter(props: { roomId: string }) {
+  const posthog = usePostHog();
+
   const [message, setMessage] = React.useState<string>("");
   const [media, setMedia] = React.useState<Media>({ url: "", type: "", name: "", size: 0 });
   const [isUploading, setIsUploading] = React.useState<boolean>(false);
@@ -30,10 +33,14 @@ export default function ChatFooter(props: { roomId: string }) {
       setMedia({ url: "", type: "", name: "", size: 0 });
       setUploadButtonState("success");
       setSendButtonState("success");
+
+      posthog.capture("message_sent", { roomId: props.roomId, username });
     },
-    onError: () => {
+    onError: (error) => {
       setUploadButtonState("idle");
       setSendButtonState("idle");
+
+      posthog.capture("message_sent_failed", { roomId: props.roomId, username, error: error.message });
     },
   });
 
@@ -45,11 +52,15 @@ export default function ChatFooter(props: { roomId: string }) {
         setMedia({ url: file.ufsUrl, type: file.type, name: file.name, size: file.size });
         setUploadButtonState("success");
         toast.success("uploaded successfully!");
+
+        posthog.capture("media_uploaded", { roomId: props.roomId, username });
       }
     },
     onUploadError: (error: Error) => {
       setIsUploading(false);
       toast.error(`upload failed: ${error.message}`);
+
+      posthog.capture("media_upload_failed", { roomId: props.roomId, username, error: error.message });
     },
   });
 

@@ -11,6 +11,7 @@ import { useConvexMutation } from "@convex-dev/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -29,6 +30,7 @@ export default function MainForm() {
   const [joinButtonState, setJoinButtonState] = React.useState<ButtonState>("idle");
 
   const router = useRouter();
+  const posthog = usePostHog();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -44,12 +46,14 @@ export default function MainForm() {
     onSuccess: (data: { roomId: string }) => {
       if (data?.roomId) {
         setCreateButtonState("success");
+        posthog.capture("room_created", { roomId: data.roomId, username: form.getValues("username") });
         router.push(`/room/${data.roomId}?username=${encodeURIComponent(form.getValues("username"))}`);
       }
     },
     onError: (error) => {
       setCreateButtonState("idle");
       toast(`error: ${error.message}`);
+      posthog.capture("room_creation_failed", { username: form.getValues("username"), error: error.message });
     },
   });
 
@@ -60,6 +64,7 @@ export default function MainForm() {
       if (data?.roomId) {
         setJoinButtonState("success");
         router.push(`/room/${data.roomId}?username=${encodeURIComponent(form.getValues("username"))}`);
+        posthog.capture("room_joined", { roomId: data.roomId, username: form.getValues("username") });
       }
     },
     onError: (error) => {
@@ -67,6 +72,7 @@ export default function MainForm() {
       toast(
         `error: ${error.message.includes("Room doesn't exist or has expired") ? "Room has expired" : `${error.message}`}`,
       );
+      posthog.capture("room_joining_failed", { username: form.getValues("username"), error: error.message });
     },
   });
 

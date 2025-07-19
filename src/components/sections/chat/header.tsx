@@ -19,10 +19,13 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { ChevronDown, EllipsisVertical, LoaderCircle, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
+import { usePostHog } from "posthog-js/react";
 import * as React from "react";
 import { api } from "../../../../convex/_generated/api";
 
 export default function ChatHeader(props: { roomId: string }) {
+  const posthog = usePostHog();
+
   const [leaveButtonState, setLeaveButtonState] = React.useState<ButtonState>("idle");
 
   const router = useRouter();
@@ -42,7 +45,11 @@ export default function ChatHeader(props: { roomId: string }) {
     mutationFn: useConvexMutation(api.rooms.leaveRoom),
     onSuccess: () => {
       setLeaveButtonState("idle");
+      posthog.capture("room_left", { roomId: props.roomId, username });
       router.push("/");
+    },
+    onError: (error) => {
+      posthog.capture("room_leave_failed", { roomId: props.roomId, username, error: error.message });
     },
   });
 
