@@ -16,6 +16,8 @@ import { api } from "../../../../convex/_generated/api";
 export default function ChatFooter(props: { roomId: string }) {
   const posthog = usePostHog();
 
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
   const [message, setMessage] = React.useState<string>("");
   const [media, setMedia] = React.useState<Media>({ url: "", type: "", name: "", size: 0 });
   const [isUploading, setIsUploading] = React.useState<boolean>(false);
@@ -96,6 +98,27 @@ export default function ChatFooter(props: { roomId: string }) {
     }
   }
 
+  React.useEffect(() => {
+    function handleGlobalKeyDown(event: KeyboardEvent) {
+      // ignore if input is already focused or if modifier keys are pressed
+      if (
+        document.activeElement === inputRef.current ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.altKey ||
+        event.key.length !== 1 // only printable characters
+      ) {
+        return;
+      }
+
+      inputRef.current?.focus();
+    }
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleGlobalKeyDown);
+    };
+  }, []);
+
   const canSendMessage = Boolean((message.trim() || media.url) && !isSendMessagePending);
   const isUploadDisabled = isUploading || isSendMessagePending;
 
@@ -111,6 +134,7 @@ export default function ChatFooter(props: { roomId: string }) {
       />
 
       <Input
+        ref={inputRef}
         placeholder="type your message..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
