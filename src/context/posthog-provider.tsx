@@ -17,7 +17,9 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <PHProvider client={posthog}>
-      <PostHogAuthWrapper>{children}</PostHogAuthWrapper>
+      <React.Suspense>
+        <PostHogAuthWrapper>{children}</PostHogAuthWrapper>
+      </React.Suspense>
     </PHProvider>
   );
 }

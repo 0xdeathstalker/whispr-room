@@ -22,6 +22,7 @@ A disposable chat room for quick, ephemeral conversations.
 - [Tailwind](https://tailwindcss.com/)
 - [Uploadthing](https://uploadthing.com/)
 - [Motion](https://motion.dev/)
+- [PostHog](https://posthog.com/)
 
 ## Getting Started
 
@@ -79,7 +80,7 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
 ## Future Improvements
 
 - [x] allow media sharing (images, videos, audio, files)
-- [ ] integrate posthog for analytics
+- [x] integrate posthog for analytics
 - [ ] explore AI integration (tidbit.ai)
 
 ## Contributing
