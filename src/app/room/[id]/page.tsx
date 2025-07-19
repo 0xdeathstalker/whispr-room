@@ -1,6 +1,5 @@
 import Chat from "@/components/sections/chat";
-import Footer from "@/components/sections/footer";
-import Hero from "@/components/sections/hero";
+import { Hero } from "@/components/sections/main-content";
 
 export default async function RoomPage({ params }: { params: Promise<{ id: string }> }) {
   const roomId = await params;
@@ -12,8 +11,6 @@ export default async function RoomPage({ params }: { params: Promise<{ id: strin
 
         <Chat roomId={roomId.id} />
       </div>
-
-      <Footer />
     </div>
   );
 }

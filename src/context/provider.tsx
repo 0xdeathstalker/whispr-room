@@ -2,10 +2,10 @@
 
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { type ReactNode } from "react";
+import { PostHogProvider } from "./posthog-provider";
 import QueryProvider from "./query-provider";
 import { ThemeProvider } from "./theme-provider";
 import UploadThingProvider from "./uploadthing-provider";
-import { PostHogProvider } from "./posthog-provider";
 
 export default function Provider({ children }: { children: ReactNode }) {
   return (

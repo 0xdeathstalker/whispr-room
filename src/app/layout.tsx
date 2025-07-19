@@ -1,8 +1,9 @@
+import Footer from "@/components/sections/footer";
+import { Toaster } from "@/components/ui/sonner";
+import Provider from "@/context/provider";
+import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "../styles/globals.css";
-import Provider from "@/context/provider";
-import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,8 +28,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Provider>{children}</Provider>
+      <body className={`overflow-y-hidden ${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Provider>
+          {children}
+          <Footer />
+        </Provider>
         <Toaster position="bottom-center" />
       </body>
     </html>

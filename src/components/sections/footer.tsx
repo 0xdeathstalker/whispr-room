@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { Label } from "@/components/ui/label";
+import { motion } from "motion/react";
 import { useTheme } from "next-themes";
+import Link from "next/link";
 
 export default function Footer() {
   const { theme, setTheme } = useTheme();
@@ -22,7 +23,12 @@ export default function Footer() {
   }
 
   return (
-    <footer className="text-muted-foreground absolute bottom-0 flex w-full items-center justify-between border-t px-5 py-2 font-sans sm:px-10">
+    <motion.footer
+      initial={{ y: 100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ type: "spring", bounce: 0 }}
+      className="text-muted-foreground absolute bottom-0 flex w-full items-center justify-between border-t px-5 py-2 font-sans sm:px-10"
+    >
       <Label className="text-xs">
         Developed by{" "}
         <Link
@@ -40,6 +46,6 @@ export default function Footer() {
       >
         {theme === "light" ? "light mode" : theme === "dark" ? "dark mode" : "system mode"}
       </span>
-    </footer>
+    </motion.footer>
   );
 }
