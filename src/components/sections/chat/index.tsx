@@ -4,7 +4,6 @@ import ChatFooter from "@/components/sections/chat/footer";
 import ChatHeader from "@/components/sections/chat/header";
 import ChatMessages from "@/components/sections/chat/messages";
 import { buttonVariants } from "@/components/ui/button";
-import { useRoomLeave } from "@/lib/hooks/useRoomLeave";
 import { cn } from "@/lib/utils";
 import { formSchema } from "@/lib/validation/room";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
@@ -43,6 +42,18 @@ export default function Chat({ roomId }: { roomId: string }) {
     },
   });
 
+  const { mutate: leaveRoom } = useMutation({
+    mutationKey: ["leave-room"],
+    mutationFn: useConvexMutation(api.rooms.leaveRoom),
+  });
+
+  const handleBeforeUnload = React.useCallback(() => {
+    if (roomId && username) {
+      leaveRoom({ roomId, username });
+    }
+  }, [roomId, username, leaveRoom]);
+
+  // auto join room when the user visits the url with valid username and room id
   React.useEffect(() => {
     if (isParticipantsLoading || !participants) return;
 
@@ -57,7 +68,14 @@ export default function Chat({ roomId }: { roomId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [username, roomId, participants, isParticipantsLoading]);
 
-  useRoomLeave({ roomId, username });
+  // auto leave room when user closes tab/window
+  React.useEffect(() => {
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [handleBeforeUnload]);
 
   if (!isLoading && (!room || room?.expiresAt <= Date.now())) {
     return (
