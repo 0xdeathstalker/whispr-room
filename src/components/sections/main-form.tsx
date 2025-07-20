@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import getErrorMessage from "@/lib/actions/getErrorMessage";
 import type { ButtonState } from "@/lib/types";
+import { formSchema, type FormValues } from "@/lib/validation/room";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -16,15 +17,7 @@ import { usePostHog } from "posthog-js/react";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
 import { api } from "../../../convex/_generated/api";
-
-const formSchema = z.object({
-  username: z.string().min(3, { message: "username should be atleast 3 characters" }),
-  roomId: z.string().length(6, { message: "roomId should be 6 characters" }).optional().or(z.literal("")),
-});
-
-type FormValues = z.infer<typeof formSchema>;
 
 export default function MainForm() {
   const [createButtonState, setCreateButtonState] = React.useState<ButtonState>("idle");
