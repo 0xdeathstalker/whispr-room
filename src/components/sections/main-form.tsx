@@ -6,6 +6,7 @@ import RoomIdInput from "@/components/sections/roomid-input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import getErrorMessage from "@/lib/actions/getErrorMessage";
 import type { ButtonState } from "@/lib/types";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -69,9 +70,8 @@ export default function MainForm() {
     },
     onError: (error) => {
       setJoinButtonState("idle");
-      toast(
-        `error: ${error.message.includes("Room doesn't exist or has expired") ? "Room has expired" : `${error.message}`}`,
-      );
+      const errorMessage = getErrorMessage(error);
+      toast(`error: ${errorMessage}`);
       posthog.capture("room_joining_failed", { username: form.getValues("username"), error: error.message });
     },
   });

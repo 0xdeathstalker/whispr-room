@@ -18,6 +18,14 @@ export const joinRoom = mutation({
       throw new Error("Room doesn't exist or has expired");
     }
 
+    const participantAlreadyExists = await ctx.db
+      .query("participants")
+      .filter((q) => q.and(q.eq(q.field("roomId"), room._id), q.eq(q.field("username"), args.username)))
+      .first();
+    if (participantAlreadyExists) {
+      throw new Error("Participant with the same username already exists in the room!");
+    }
+
     await ctx.db.insert("participants", {
       roomId: room._id,
       username: args.username,
