@@ -2,6 +2,7 @@
 
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { type ReactNode } from "react";
+import { LeaveRoomContextProvider } from "./leave-context";
 import { PostHogProvider } from "./posthog-provider";
 import QueryProvider from "./query-provider";
 import { ThemeProvider } from "./theme-provider";
@@ -13,13 +14,15 @@ export default function Provider({ children }: { children: ReactNode }) {
       <QueryProvider>
         <NuqsAdapter>
           <UploadThingProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="dark"
-              disableTransitionOnChange
-            >
-              {children}
-            </ThemeProvider>
+            <LeaveRoomContextProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="dark"
+                disableTransitionOnChange
+              >
+                {children}
+              </ThemeProvider>
+            </LeaveRoomContextProvider>
           </UploadThingProvider>
         </NuqsAdapter>
       </QueryProvider>

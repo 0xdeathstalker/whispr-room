@@ -4,6 +4,7 @@ import ChatFooter from "@/components/sections/chat/footer";
 import ChatHeader from "@/components/sections/chat/header";
 import ChatMessages from "@/components/sections/chat/messages";
 import { buttonVariants } from "@/components/ui/button";
+import { useLeaveRoom } from "@/context/leave-context";
 import { cn } from "@/lib/utils";
 import { formSchema } from "@/lib/validation/room";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
@@ -18,6 +19,8 @@ import { api } from "../../../../convex/_generated/api";
 export default function Chat({ roomId }: { roomId: string }) {
   const [username] = useQueryState("username", { defaultValue: "" });
   const router = useRouter();
+
+  const { isLeaving } = useLeaveRoom();
 
   const validationResult = formSchema.safeParse({ username, roomId });
 
@@ -49,13 +52,15 @@ export default function Chat({ roomId }: { roomId: string }) {
 
   const handleBeforeUnload = React.useCallback(() => {
     if (roomId && username) {
+      isLeaving.current = true;
       leaveRoom({ roomId, username });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, username, leaveRoom]);
 
   // auto join room when the user visits the url with valid username and room id
   React.useEffect(() => {
-    if (isParticipantsLoading || !participants) return;
+    if (isParticipantsLoading || !participants || isLeaving.current) return;
 
     const participantAlreadyExists = participants.find((p) => p.username === username);
 

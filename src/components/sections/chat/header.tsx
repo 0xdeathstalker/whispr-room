@@ -23,6 +23,7 @@ import { usePostHog } from "posthog-js/react";
 import * as React from "react";
 import { useScramble } from "use-scramble";
 import { api } from "../../../../convex/_generated/api";
+import { useLeaveRoom } from "@/context/leave-context";
 
 export default function ChatHeader(props: { roomId: string }) {
   const posthog = usePostHog();
@@ -33,6 +34,7 @@ export default function ChatHeader(props: { roomId: string }) {
   });
 
   const [leaveButtonState, setLeaveButtonState] = React.useState<ButtonState>("idle");
+  const { isLeaving } = useLeaveRoom();
 
   const router = useRouter();
   const [username] = useQueryState("username", { defaultValue: "" });
@@ -60,6 +62,7 @@ export default function ChatHeader(props: { roomId: string }) {
   });
 
   function handleLeaveRoom() {
+    isLeaving.current = true;
     leaveRoom({ roomId: props.roomId, username });
   }
 
