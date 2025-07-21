@@ -21,10 +21,16 @@ import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { usePostHog } from "posthog-js/react";
 import * as React from "react";
+import { useScramble } from "use-scramble";
 import { api } from "../../../../convex/_generated/api";
 
 export default function ChatHeader(props: { roomId: string }) {
   const posthog = usePostHog();
+
+  const { ref, replay } = useScramble({
+    text: `#${props.roomId}`,
+    speed: 0.4,
+  });
 
   const [leaveButtonState, setLeaveButtonState] = React.useState<ButtonState>("idle");
 
@@ -60,7 +66,11 @@ export default function ChatHeader(props: { roomId: string }) {
   return (
     <div className="flex items-center justify-between px-2 pb-2">
       <div className="flex items-center gap-1">
-        <h1>#{props.roomId}</h1>
+        <h1
+          ref={ref}
+          onMouseOver={replay}
+          onFocus={replay}
+        />
         <CopyButton textToCopy={props.roomId} />
       </div>
 
