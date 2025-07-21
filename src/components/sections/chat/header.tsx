@@ -13,7 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLeaveRoom } from "@/context/leave-context";
 import type { ButtonState } from "@/lib/types";
+import { formSchema } from "@/lib/validation/room";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ChevronDown, EllipsisVertical, LoaderCircle, Users } from "lucide-react";
@@ -21,12 +23,16 @@ import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { usePostHog } from "posthog-js/react";
 import * as React from "react";
+import { toast } from "sonner";
 import { useScramble } from "use-scramble";
 import { api } from "../../../../convex/_generated/api";
-import { useLeaveRoom } from "@/context/leave-context";
 
 export default function ChatHeader(props: { roomId: string }) {
+  const [username] = useQueryState("username", { defaultValue: "" });
+  const router = useRouter();
   const posthog = usePostHog();
+
+  const { isLeaving } = useLeaveRoom();
 
   const { ref, replay } = useScramble({
     text: `#${props.roomId}`,
@@ -34,10 +40,8 @@ export default function ChatHeader(props: { roomId: string }) {
   });
 
   const [leaveButtonState, setLeaveButtonState] = React.useState<ButtonState>("idle");
-  const { isLeaving } = useLeaveRoom();
 
-  const router = useRouter();
-  const [username] = useQueryState("username", { defaultValue: "" });
+  const validationResult = formSchema.safeParse({ username, roomId: props.roomId });
 
   const { data: participants, isLoading: isParticipantsLoading } = useQuery(
     convexQuery(api.participants.getParticipants, { roomId: props.roomId }),
@@ -61,10 +65,56 @@ export default function ChatHeader(props: { roomId: string }) {
     },
   });
 
+  const { mutate: joinRoom } = useMutation({
+    mutationKey: ["joinRoom"],
+    mutationFn: useConvexMutation(api.participants.joinRoom),
+    onSuccess: (data: { roomId: string }) => {
+      toast.success(`success: joined room ${data.roomId}`);
+      posthog.capture("joined_room", { username, roomId: props.roomId });
+    },
+    onError: (error) => {
+      toast.error(`error: failed to join room:: ${error.message}`);
+      posthog.capture("room_join_failed", { username, roomId: props.roomId });
+      router.push("/");
+    },
+  });
+
   function handleLeaveRoom() {
     isLeaving.current = true;
     leaveRoom({ roomId: props.roomId, username });
   }
+
+  const handleBeforeUnload = React.useCallback(() => {
+    if (props.roomId && username) {
+      isLeaving.current = true;
+      leaveRoom({ roomId: props.roomId, username });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.roomId, username, leaveRoom]);
+
+  // auto join room when the user visits the url with valid username and room id
+  React.useEffect(() => {
+    if (isParticipantsLoading || !participants || isLeaving.current) return;
+
+    const participantAlreadyExists = participants.find((p) => p.username === username);
+
+    if (!participantAlreadyExists && validationResult.success) {
+      joinRoom({ username, roomId: props.roomId });
+    } else if (!validationResult.success) {
+      toast.error(`error: Unable to join the room, username:'${username}' or roomId:'${props.roomId}' not validated`);
+    }
+    // doing nothing if participant already exists
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [username, props.roomId, participants, isParticipantsLoading]);
+
+  // auto leave room when user closes tab/window
+  React.useEffect(() => {
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [handleBeforeUnload]);
 
   return (
     <div className="flex items-center justify-between px-2 pb-2">
