@@ -79,10 +79,6 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
 
 ## Future Improvements
 
-- [x] allow media sharing (images, videos, audio, files)
-- [x] integrate posthog for analytics
-- [ ] end-to-end encryption
-- [x] scramble effect on room id
 - [ ] explore AI integration (tidbit.ai)
 - [ ] explore porto.sh integration
 
