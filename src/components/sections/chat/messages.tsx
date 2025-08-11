@@ -2,6 +2,7 @@
 
 import MediaContent from "@/components/sections/chat/media-content";
 import getSystemMessage from "@/lib/actions/getSystemMessage";
+import { cn } from "@/lib/utils";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
@@ -27,7 +28,7 @@ export default function ChatMessages(props: { roomId: string }) {
   return (
     <div
       ref={containerRef}
-      className="bg-background flex h-64 flex-col gap-2 overflow-y-auto border-y px-2 py-3"
+      className="bg-background flex h-64 flex-col gap-2 overflow-x-hidden overflow-y-auto border-y px-2 py-3"
     >
       {messages?.map((m) => {
         if (m.isSystem) {
@@ -48,7 +49,10 @@ export default function ChatMessages(props: { roomId: string }) {
           return (
             <div
               key={m._id}
-              className="bg-secondary flex flex-col gap-1 rounded-md px-3 py-2 shadow-xs"
+              className={cn(
+                "bg-secondary flex max-w-[250px] flex-col gap-1 rounded-md px-3 py-2 shadow-xs",
+                m.username === username ? "place-self-end" : "place-self-start",
+              )}
             >
               <div className="text-muted-foreground flex items-center justify-between gap-2 text-xs font-semibold">
                 <span>@{m.username === username ? "you" : m.username}</span>
