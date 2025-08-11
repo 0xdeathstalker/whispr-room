@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLeaveRoom } from "@/context/leave-context";
-import useParticipantQuery from "@/lib/hooks/useParticipantQuery";
+import useParticipantsQuery from "@/lib/hooks/useParticipantsQuery";
 import useRoomQuery from "@/lib/hooks/useRoomQuery";
 import type { ButtonState } from "@/lib/types";
 import { formSchema } from "@/lib/validation/room";
@@ -45,7 +45,7 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
 
   const validationResult = formSchema.safeParse({ username, roomId });
 
-  const { data: participants, isLoading: isParticipantsLoading } = useParticipantQuery({ roomId });
+  const { data: participants, isLoading: isParticipantsLoading } = useParticipantsQuery({ roomId });
   const { data: room, isLoading: isRoomLoading } = useRoomQuery({ roomId });
 
   const { mutate: leaveRoom, isPending: isLeaveRoomMutationPending } = useMutation({
