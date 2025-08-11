@@ -2,19 +2,16 @@
 
 import MediaContent from "@/components/sections/chat/media-content";
 import getSystemMessage from "@/lib/actions/getSystemMessage";
+import useMessagesQuery from "@/lib/hooks/useMessagesQuery";
 import { cn } from "@/lib/utils";
-import { convexQuery } from "@convex-dev/react-query";
-import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
 import { useQueryState } from "nuqs";
 import * as React from "react";
-import { api } from "../../../../convex/_generated/api";
 
-export default function ChatMessages(props: { roomId: string }) {
+export default function ChatMessages({ roomId }: { roomId: string }) {
+  const { data: messages } = useMessagesQuery({ roomId });
+
   const [username] = useQueryState("username", { defaultValue: "" });
-
-  const { data: messages } = useQuery(convexQuery(api.messages.getMessages, { roomId: props.roomId }));
-
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {

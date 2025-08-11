@@ -21,7 +21,7 @@ const BUTTON_STATES = {
   success: <Paperclip className="h-4 w-4" />,
 };
 
-export default function MediaUpload({
+export default function MediaUploadInput({
   mediaUrl,
   isUploading,
   isDisabled,

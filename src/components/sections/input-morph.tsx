@@ -1,11 +1,9 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { convexQuery } from "@convex-dev/react-query";
-import { useQuery } from "@tanstack/react-query";
+import useMessagesQuery from "@/lib/hooks/useMessagesQuery";
 import { motion } from "motion/react";
 import * as React from "react";
-import { api } from "../../../convex/_generated/api";
 
 type InputMorphProps = {
   newMessage: string;
@@ -24,7 +22,7 @@ export default function InputMorph({
 }: InputMorphProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const { data: messages } = useQuery(convexQuery(api.messages.getMessages, { roomId }));
+  const { data: messages } = useMessagesQuery({ roomId });
 
   const lastMessageIndex = messages ? messages.length : 0;
 

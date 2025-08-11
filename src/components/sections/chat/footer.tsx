@@ -1,7 +1,8 @@
 "use client";
 
-import MediaUpload from "@/components/sections/chat/media-upload";
+import MediaUploadInput from "@/components/sections/chat/media-upload-input";
 import SendButton from "@/components/sections/chat/send-button";
+import InputMorph from "@/components/sections/input-morph";
 import useMediaUpload from "@/lib/hooks/useMediaUpload";
 import type { ButtonState } from "@/lib/types";
 import { useConvexMutation } from "@convex-dev/react-query";
@@ -10,7 +11,6 @@ import { useQueryState } from "nuqs";
 import { usePostHog } from "posthog-js/react";
 import * as React from "react";
 import { api } from "../../../../convex/_generated/api";
-import InputMorph from "../input-morph";
 
 export default function ChatFooter(props: { roomId: string }) {
   const posthog = usePostHog();
@@ -77,7 +77,7 @@ export default function ChatFooter(props: { roomId: string }) {
 
   return (
     <div className="flex items-center gap-2 pt-2">
-      <MediaUpload
+      <MediaUploadInput
         mediaUrl={media.url}
         isUploading={isUploading}
         isDisabled={isUploadDisabled}
