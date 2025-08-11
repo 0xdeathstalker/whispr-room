@@ -1,3 +1,5 @@
+import type { Id } from "../../../convex/_generated/dataModel";
+
 export type ButtonState = "idle" | "loading" | "success";
 
 export type Media = {
@@ -6,3 +8,13 @@ export type Media = {
   name: string;
   size: number;
 };
+
+export type Participants =
+  | {
+      _id: Id<"participants">;
+      _creationTime: number;
+      roomId: Id<"rooms">;
+      username: string;
+      joinedAt: number;
+    }[]
+  | undefined;
