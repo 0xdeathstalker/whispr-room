@@ -1,16 +1,11 @@
-import Chat from "@/components/sections/chat";
-import { Hero } from "@/components/sections/main-content";
+import ChatContent from "@/components/sections/chat-content";
 
 export default async function RoomPage({ params }: { params: Promise<{ id: string }> }) {
   const roomId = await params;
 
   return (
     <div className="container mx-auto flex min-h-screen w-full max-w-[100ch] flex-col items-center justify-center px-4">
-      <div className="mx-auto flex h-fit w-full max-w-md flex-col items-center justify-between rounded-md border p-7 shadow-lg sm:max-w-lg sm:p-14 dark:shadow-none">
-        <Hero />
-
-        <Chat roomId={roomId.id} />
-      </div>
+      <ChatContent roomId={roomId.id} />
     </div>
   );
 }

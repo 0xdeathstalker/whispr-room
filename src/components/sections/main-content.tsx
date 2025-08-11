@@ -27,6 +27,8 @@ export default function MainContent() {
       initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
       animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
       transition={{ type: "spring", bounce: 0, duration: 1 }}
+      layout="size"
+      layoutId="app-container"
       className="mx-auto flex h-fit w-full max-w-md flex-col items-center justify-between rounded-md border p-7 shadow-lg sm:max-w-lg sm:p-14 dark:shadow-none"
     >
       <Hero />
