@@ -64,7 +64,7 @@ export default function MediaContent({ mediaUrl, mediaType, mediaName, mediaSize
   }
 
   const renderLoadingState = () => (
-    <Skeleton className="flex h-36 w-full animate-pulse items-center justify-center rounded-md bg-black/30" />
+    <Skeleton className="flex h-36 w-56 animate-pulse items-center justify-center rounded-md bg-black/30" />
   );
 
   const renderErrorState = (type: string) => (

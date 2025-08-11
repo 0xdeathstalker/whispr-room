@@ -5,10 +5,10 @@ import getSystemMessage from "@/lib/actions/getSystemMessage";
 import { cn } from "@/lib/utils";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
+import { AnimatePresence, motion } from "motion/react";
 import { useQueryState } from "nuqs";
 import * as React from "react";
 import { api } from "../../../../convex/_generated/api";
-import { motion, AnimatePresence } from "motion/react";
 
 export default function ChatMessages(props: { roomId: string }) {
   const [username] = useQueryState("username", { defaultValue: "" });
@@ -52,30 +52,44 @@ export default function ChatMessages(props: { roomId: string }) {
               <motion.div
                 key={m._id}
                 className={cn(
-                  "bg-secondary flex max-w-[250px] flex-col gap-1 rounded-md px-3 py-2 shadow-xs",
+                  "bg-secondary relative flex max-w-[250px] flex-col rounded-md px-3 py-1 pb-[17px] shadow-xs",
                   m.username === username ? "place-self-end" : "place-self-start",
                 )}
                 layout="position"
                 layoutId={`message-${messages.length - 1}`}
+                transition={{ type: "spring", bounce: 0, duration: 0.3 }}
               >
-                <div className="text-muted-foreground flex items-center justify-between gap-2 text-xs font-semibold">
-                  <span>{m.username === username ? null : `@${m.username}`}</span>
-                  {m.createdAt && (
-                    <span className="text-muted-foreground text-[10px]">
-                      {new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                    </span>
+                <h3 className="text-muted-foreground text-[10px]">
+                  {m.username === username ? null : `@${m.username}`}
+                </h3>
+
+                <div className="break-words">
+                  {m.content && (
+                    <div className="text-secondary-foreground text-sm whitespace-pre-wrap">
+                      {m.content}
+                      {/* reserve space for timestamp only on the last line of text */}
+                      <span
+                        aria-hidden
+                        className="pointer-events-none mt-1 inline-block h-[1em] min-w-12 align-baseline opacity-0 select-none"
+                      />
+                    </div>
+                  )}
+                  {m.mediaUrl && m.mediaType && (
+                    <div className="mb-1 w-full">
+                      <MediaContent
+                        mediaUrl={m.mediaUrl}
+                        mediaType={m.mediaType}
+                        mediaName={m.mediaName}
+                        mediaSize={m.mediaSize}
+                      />
+                    </div>
                   )}
                 </div>
-                {m.content && <div className="text-secondary-foreground text-sm">{m.content}</div>}
-                {m.mediaUrl && m.mediaType && (
-                  <div className="mt-2">
-                    <MediaContent
-                      mediaUrl={m.mediaUrl}
-                      mediaType={m.mediaType}
-                      mediaName={m.mediaName}
-                      mediaSize={m.mediaSize}
-                    />
-                  </div>
+
+                {m.createdAt && (
+                  <span className="text-muted-foreground absolute right-3 bottom-1 text-[10px]">
+                    {new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  </span>
                 )}
               </motion.div>
             );

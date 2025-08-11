@@ -153,10 +153,11 @@ export default function ChatFooter(props: { roomId: string }) {
           key={lastMessageIndex}
           layout="position"
           layoutId={`message-${lastMessageIndex}`}
-          className="pointer-events-none absolute left-[13px] -z-10 text-sm text-nowrap break-words [word-break:break-word] text-transparent"
-          initial={{ opacity: 0.6, zIndex: -1 }}
-          animate={{ opacity: 0.6, zIndex: -1 }}
+          className="pointer-events-none absolute left-[13px] z-20 text-sm text-nowrap break-words [word-break:break-word] text-transparent"
+          initial={{ opacity: 0.6, zIndex: 1 }}
+          animate={{ opacity: 0.6, zIndex: 1 }}
           exit={{ opacity: 1, zIndex: 1 }}
+          transition={{ type: "spring", bounce: 0, duration: 0.3 }}
         >
           <span>{message}</span>
         </motion.div>
