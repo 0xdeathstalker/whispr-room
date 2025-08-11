@@ -1,12 +1,13 @@
 "use client";
 
 import MediaUpload from "@/components/sections/chat/media-upload";
+import { motion } from "motion/react";
 import SendButton from "@/components/sections/chat/send-button";
 import { Input } from "@/components/ui/input";
 import { useUploadThing } from "@/context/uploadthing-provider";
 import type { ButtonState, Media } from "@/lib/types";
-import { useConvexMutation } from "@convex-dev/react-query";
-import { useMutation } from "@tanstack/react-query";
+import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import { usePostHog } from "posthog-js/react";
 import * as React from "react";
@@ -26,6 +27,8 @@ export default function ChatFooter(props: { roomId: string }) {
   const [sendButtonState, setSendButtonState] = React.useState<ButtonState>("idle");
 
   const [username] = useQueryState("username", { defaultValue: "" });
+
+  const { data: messages } = useQuery(convexQuery(api.messages.getMessages, { roomId: props.roomId }));
 
   const { mutate: sendMessage, isPending: isSendMessagePending } = useMutation({
     mutationKey: ["sendMessage", message, media.url],
@@ -122,6 +125,8 @@ export default function ChatFooter(props: { roomId: string }) {
   const canSendMessage = Boolean((message.trim() || media.url) && !isSendMessagePending);
   const isUploadDisabled = isUploading || isSendMessagePending;
 
+  const lastMessageIndex = messages ? messages.length : 0;
+
   return (
     <div className="flex items-center gap-2 pt-2">
       <MediaUpload
@@ -133,15 +138,29 @@ export default function ChatFooter(props: { roomId: string }) {
         setButtonState={setUploadButtonState}
       />
 
-      <Input
-        ref={inputRef}
-        placeholder="type your message..."
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        className="font-mono text-sm placeholder:font-mono"
-        disabled={isSendMessagePending}
-        onKeyDown={handleKeyDown}
-      />
+      <div className="relative flex w-full items-center overflow-hidden">
+        <Input
+          ref={inputRef}
+          type="text"
+          placeholder="type your message..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="font-mono text-sm placeholder:font-mono"
+          disabled={isSendMessagePending}
+          onKeyDown={handleKeyDown}
+        />
+        <motion.div
+          key={lastMessageIndex}
+          layout="position"
+          layoutId={`message-${lastMessageIndex}`}
+          className="pointer-events-none absolute left-[13px] -z-10 text-sm text-nowrap break-words [word-break:break-word] text-transparent"
+          initial={{ opacity: 0.6, zIndex: -1 }}
+          animate={{ opacity: 0.6, zIndex: -1 }}
+          exit={{ opacity: 1, zIndex: 1 }}
+        >
+          <span>{message}</span>
+        </motion.div>
+      </div>
 
       <SendButton
         buttonState={sendButtonState}

@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import * as React from "react";
 import { api } from "../../../../convex/_generated/api";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function ChatMessages(props: { roomId: string }) {
   const [username] = useQueryState("username", { defaultValue: "" });
@@ -30,53 +31,57 @@ export default function ChatMessages(props: { roomId: string }) {
       ref={containerRef}
       className="bg-background flex h-64 flex-col gap-2 overflow-x-hidden overflow-y-auto border-y px-2 py-3"
     >
-      {messages?.map((m) => {
-        if (m.isSystem) {
-          const systemMessage = getSystemMessage({
-            username,
-            messageContent: m.content,
-          });
+      <AnimatePresence mode="wait">
+        {messages?.map((m) => {
+          if (m.isSystem) {
+            const systemMessage = getSystemMessage({
+              username,
+              messageContent: m.content,
+            });
 
-          return (
-            <div
-              key={m._id}
-              className="text-muted-foreground text-center text-[10px]"
-            >
-              {systemMessage}
-            </div>
-          );
-        } else {
-          return (
-            <div
-              key={m._id}
-              className={cn(
-                "bg-secondary flex max-w-[250px] flex-col gap-1 rounded-md px-3 py-2 shadow-xs",
-                m.username === username ? "place-self-end" : "place-self-start",
-              )}
-            >
-              <div className="text-muted-foreground flex items-center justify-between gap-2 text-xs font-semibold">
-                <span>@{m.username === username ? "you" : m.username}</span>
-                {m.createdAt && (
-                  <span className="text-muted-foreground text-[10px]">
-                    {new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                  </span>
-                )}
+            return (
+              <div
+                key={m._id}
+                className="text-muted-foreground text-center text-[10px]"
+              >
+                {systemMessage}
               </div>
-              {m.content && <div className="text-secondary-foreground text-sm">{m.content}</div>}
-              {m.mediaUrl && m.mediaType && (
-                <div className="mt-2">
-                  <MediaContent
-                    mediaUrl={m.mediaUrl}
-                    mediaType={m.mediaType}
-                    mediaName={m.mediaName}
-                    mediaSize={m.mediaSize}
-                  />
+            );
+          } else {
+            return (
+              <motion.div
+                key={m._id}
+                className={cn(
+                  "bg-secondary flex max-w-[250px] flex-col gap-1 rounded-md px-3 py-2 shadow-xs",
+                  m.username === username ? "place-self-end" : "place-self-start",
+                )}
+                layout="position"
+                layoutId={`message-${messages.length - 1}`}
+              >
+                <div className="text-muted-foreground flex items-center justify-between gap-2 text-xs font-semibold">
+                  <span>{m.username === username ? null : `@${m.username}`}</span>
+                  {m.createdAt && (
+                    <span className="text-muted-foreground text-[10px]">
+                      {new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                  )}
                 </div>
-              )}
-            </div>
-          );
-        }
-      })}
+                {m.content && <div className="text-secondary-foreground text-sm">{m.content}</div>}
+                {m.mediaUrl && m.mediaType && (
+                  <div className="mt-2">
+                    <MediaContent
+                      mediaUrl={m.mediaUrl}
+                      mediaType={m.mediaType}
+                      mediaName={m.mediaName}
+                      mediaSize={m.mediaSize}
+                    />
+                  </div>
+                )}
+              </motion.div>
+            );
+          }
+        })}
+      </AnimatePresence>
     </div>
   );
 }
