@@ -30,11 +30,11 @@ export default function Footer() {
       className="text-muted-foreground absolute bottom-0 flex w-full items-center justify-between border-t px-5 py-2 font-sans sm:px-10"
     >
       <Label className="text-xs">
-        Developed by{" "}
+        Developed by
         <Link
-          href="https://github.com/0xdeathstalker"
+          href="https://deathstalker.dev"
           target="_blank"
-          className="text-muted-foreground hover:text-foreground"
+          className="text-muted-foreground hover:text-foreground -ml-1"
         >
           0xdeathstalker
         </Link>
