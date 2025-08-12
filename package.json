@@ -7,7 +7,14 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write",
+    "lint:next": "next lint",
+    "format": "biome format .",
+    "format:fix": "biome format . --write",
+    "check": "biome check . && next lint",
+    "check:fix": "biome check . --write && next lint --fix",
+    "ci": "biome ci . && next lint"
   },
   "dependencies": {
     "@convex-dev/react-query": "0.0.0-alpha.11",
@@ -43,6 +50,7 @@
     "zod": "^3.25.75"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.1.4",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
