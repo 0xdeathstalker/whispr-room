@@ -7,10 +7,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "eslint --fix src/**/*.{ts,tsx}",
-    "format": "prettier --config ./prettier.config.mjs --check 'src/**/*.{ts,tsx,json,css}'",
-    "format:fix": "prettier --config ./prettier.config.mjs --write 'src/**/*.{ts,tsx,json,css}'"
+    "lint": "next lint"
   },
   "dependencies": {
     "@convex-dev/react-query": "0.0.0-alpha.11",
@@ -46,15 +43,10 @@
     "zod": "^3.25.75"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "15.3.4",
-    "prettier": "^3.6.1",
-    "prettier-plugin-tailwindcss": "^0.6.13",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.4",
     "typescript": "^5"
