@@ -23,6 +23,7 @@ A disposable chat room for quick, ephemeral conversations.
 - [Uploadthing](https://uploadthing.com/)
 - [Motion](https://motion.dev/)
 - [PostHog](https://posthog.com/)
+- [Biome](https://biomejs.dev/)
 
 ## Getting Started
 
