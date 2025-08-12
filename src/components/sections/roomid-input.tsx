@@ -1,5 +1,5 @@
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 
 export default function RoomIdInput(props: { value: string | undefined; onChange: (...event: unknown[]) => void }) {
   return (

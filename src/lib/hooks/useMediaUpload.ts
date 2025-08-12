@@ -1,8 +1,8 @@
-import { useUploadThing } from "@/context/uploadthing-provider";
-import type { ButtonState, Media } from "@/lib/types";
 import { usePostHog } from "posthog-js/react";
 import * as React from "react";
 import { toast } from "sonner";
+import { useUploadThing } from "@/context/uploadthing-provider";
+import type { ButtonState, Media } from "@/lib/types";
 
 type UseMediaUploadProps = {
   roomId: string;

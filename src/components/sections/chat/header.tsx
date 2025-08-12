@@ -1,5 +1,14 @@
 "use client";
 
+import { useConvexMutation } from "@convex-dev/react-query";
+import { type UseMutateFunction, useMutation } from "@tanstack/react-query";
+import { ChevronDown, EllipsisVertical, LoaderCircle, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useQueryState } from "nuqs";
+import { usePostHog } from "posthog-js/react";
+import * as React from "react";
+import { toast } from "sonner";
+import { useScramble } from "use-scramble";
 import CopyButton from "@/components/copy-button";
 import LeaveButton from "@/components/sections/chat/leave-button";
 import Timer from "@/components/timer";
@@ -18,15 +27,6 @@ import useParticipantsQuery from "@/lib/hooks/useParticipantsQuery";
 import useRoomQuery from "@/lib/hooks/useRoomQuery";
 import type { ButtonState, Participants } from "@/lib/types";
 import { formSchema } from "@/lib/validation/room";
-import { useConvexMutation } from "@convex-dev/react-query";
-import { type UseMutateFunction, useMutation } from "@tanstack/react-query";
-import { ChevronDown, EllipsisVertical, LoaderCircle, Users } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useQueryState } from "nuqs";
-import { usePostHog } from "posthog-js/react";
-import * as React from "react";
-import { toast } from "sonner";
-import { useScramble } from "use-scramble";
 import { api } from "../../../../convex/_generated/api";
 
 export default function ChatHeader({ roomId }: { roomId: string }) {
@@ -57,7 +57,11 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
       router.push("/");
     },
     onError: (error) => {
-      posthog.capture("room_leave_failed", { roomId, username, error: error.message });
+      posthog.capture("room_leave_failed", {
+        roomId,
+        username,
+        error: error.message,
+      });
     },
   });
 
@@ -85,7 +89,6 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
       isLeaving.current = true;
       leaveRoom({ roomId, username });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, username, leaveRoom]);
 
   // auto join room when the user visits the url with valid username and room id
@@ -100,7 +103,6 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
       toast.error(`error: Unable to join the room, username:'${username}' or roomId:'${roomId}' not validated`);
     }
     // doing nothing if participant already exists
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [username, roomId, participants, isParticipantsLoading]);
 
   // auto leave room when user closes tab/window

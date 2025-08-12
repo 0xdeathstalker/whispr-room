@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import type { ButtonState } from "@/lib/types";
 import { LoaderCircle, Send } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
+import { Button } from "@/components/ui/button";
+import type { ButtonState } from "@/lib/types";
 
 const BUTTON_STATES = {
   idle: <Send className="h-3 w-3" />,
@@ -29,7 +29,6 @@ export default function SendButton({
 }: SendButtonProps) {
   React.useEffect(() => {
     if (isSendMessagePending) setButtonState("loading");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSendMessagePending]);
 
   return (

@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import type { ButtonState } from "@/lib/types";
 import { LoaderCircle } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
+import { Button } from "@/components/ui/button";
+import type { ButtonState } from "@/lib/types";
 
 const ExitIcon = (
   <svg
@@ -32,7 +32,6 @@ export default function LeaveButton(props: {
 }) {
   React.useEffect(() => {
     if (props.isLeaveRoomMutationPending) props.setButtonState("loading");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isLeaveRoomMutationPending]);
 
   return (

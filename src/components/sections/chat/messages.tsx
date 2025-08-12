@@ -1,12 +1,12 @@
 "use client";
 
+import { AnimatePresence, motion } from "motion/react";
+import { useQueryState } from "nuqs";
+import * as React from "react";
 import MediaContent from "@/components/sections/chat/media-content";
 import getSystemMessage from "@/lib/actions/getSystemMessage";
 import useMessagesQuery from "@/lib/hooks/useMessagesQuery";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "motion/react";
-import { useQueryState } from "nuqs";
-import * as React from "react";
 
 export default function ChatMessages({ roomId }: { roomId: string }) {
   const { data: messages } = useMessagesQuery({ roomId });

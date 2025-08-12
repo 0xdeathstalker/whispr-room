@@ -1,15 +1,15 @@
 "use client";
 
-import MediaUploadInput from "@/components/sections/chat/media-upload-input";
-import SendButton from "@/components/sections/chat/send-button";
-import InputMorph from "@/components/sections/input-morph";
-import useMediaUpload from "@/lib/hooks/useMediaUpload";
-import type { ButtonState } from "@/lib/types";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import { usePostHog } from "posthog-js/react";
 import * as React from "react";
+import MediaUploadInput from "@/components/sections/chat/media-upload-input";
+import SendButton from "@/components/sections/chat/send-button";
+import InputMorph from "@/components/sections/input-morph";
+import useMediaUpload from "@/lib/hooks/useMediaUpload";
+import type { ButtonState } from "@/lib/types";
 import { api } from "../../../../convex/_generated/api";
 
 export default function ChatFooter(props: { roomId: string }) {

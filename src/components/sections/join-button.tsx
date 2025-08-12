@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import type { ButtonState } from "@/lib/types";
 import { ArrowRight, Check, LoaderCircle } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
+import { Button } from "@/components/ui/button";
+import type { ButtonState } from "@/lib/types";
 
 const BUTTON_STATES = {
   idle: (
@@ -37,7 +37,6 @@ export default function JoinButton({
 }: JoinButtonProps) {
   React.useEffect(() => {
     if (isJoinRoomMutationPending) setButtonState("loading");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isJoinRoomMutationPending]);
 
   return (

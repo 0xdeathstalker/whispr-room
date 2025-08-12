@@ -1,8 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useTimer } from "@/lib/hooks/useTimer";
 import { cn, formatTime } from "@/lib/utils";
-import { useRouter } from "next/navigation";
 
 export default function Timer({ startTimestamp, stopTimestamp }: { startTimestamp: number; stopTimestamp: number }) {
   const router = useRouter();
