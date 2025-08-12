@@ -1,37 +1,39 @@
 "use client";
 
-import MediaUpload from "@/components/sections/chat/media-upload";
+import MediaUploadInput from "@/components/sections/chat/media-upload-input";
 import SendButton from "@/components/sections/chat/send-button";
-import { Input } from "@/components/ui/input";
-import { useUploadThing } from "@/context/uploadthing-provider";
-import type { ButtonState, Media } from "@/lib/types";
+import InputMorph from "@/components/sections/input-morph";
+import useMediaUpload from "@/lib/hooks/useMediaUpload";
+import type { ButtonState } from "@/lib/types";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import { usePostHog } from "posthog-js/react";
 import * as React from "react";
-import { toast } from "sonner";
 import { api } from "../../../../convex/_generated/api";
 
 export default function ChatFooter(props: { roomId: string }) {
   const posthog = usePostHog();
 
-  const inputRef = React.useRef<HTMLInputElement>(null);
-
-  const [message, setMessage] = React.useState<string>("");
-  const [media, setMedia] = React.useState<Media>({ url: "", type: "", name: "", size: 0 });
-  const [isUploading, setIsUploading] = React.useState<boolean>(false);
-
-  const [uploadButtonState, setUploadButtonState] = React.useState<ButtonState>("idle");
+  const [newMessage, setNewMessage] = React.useState<string>("");
   const [sendButtonState, setSendButtonState] = React.useState<ButtonState>("idle");
 
   const [username] = useQueryState("username", { defaultValue: "" });
 
+  const {
+    media,
+    setMedia,
+    isUploading,
+    startUpload,
+    buttonState: uploadButtonState,
+    setButtonState: setUploadButtonState,
+  } = useMediaUpload({ roomId: props.roomId, username });
+
   const { mutate: sendMessage, isPending: isSendMessagePending } = useMutation({
-    mutationKey: ["sendMessage", message, media.url],
+    mutationKey: ["sendMessage", newMessage, media.url],
     mutationFn: useConvexMutation(api.messages.sendMessage),
     onSuccess: () => {
-      setMessage("");
+      setNewMessage("");
       setMedia({ url: "", type: "", name: "", size: 0 });
       setUploadButtonState("success");
       setSendButtonState("success");
@@ -46,44 +48,23 @@ export default function ChatFooter(props: { roomId: string }) {
     },
   });
 
-  const { startUpload } = useUploadThing("mediaUploader", {
-    onClientUploadComplete: (response) => {
-      setIsUploading(false);
-      if (response[0]) {
-        const file = response[0];
-        setMedia({ url: file.ufsUrl, type: file.type, name: file.name, size: file.size });
-        setUploadButtonState("success");
-        toast.success("uploaded successfully!");
-
-        posthog.capture("media_uploaded", { roomId: props.roomId, username });
-      }
-    },
-    onUploadError: (error: Error) => {
-      setIsUploading(false);
-      toast.error(`upload failed: ${error.message}`);
-
-      posthog.capture("media_upload_failed", { roomId: props.roomId, username, error: error.message });
-    },
-  });
-
   const handleFileSelect = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const files = event.target.files;
       if (!files || files.length === 0) return;
 
-      setIsUploading(true);
       void startUpload(Array.from(files), { roomId: props.roomId, username });
     },
     [startUpload, props.roomId, username],
   );
 
   function handleSendMessage() {
-    if (!message.trim() && !media.url) return;
+    if (!newMessage.trim() && !media.url) return;
 
     sendMessage({
       roomId: props.roomId,
       username,
-      content: message,
+      content: newMessage,
       mediaUrl: media.url ?? undefined,
       mediaType: media.type ?? undefined,
       mediaName: media.name ?? undefined,
@@ -91,40 +72,12 @@ export default function ChatFooter(props: { roomId: string }) {
     });
   }
 
-  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      handleSendMessage();
-    }
-  }
-
-  React.useEffect(() => {
-    function handleGlobalKeyDown(event: KeyboardEvent) {
-      // ignore if input is already focused or if modifier keys are pressed
-      if (
-        document.activeElement === inputRef.current ||
-        event.metaKey ||
-        event.ctrlKey ||
-        event.altKey ||
-        event.key.length !== 1 // only printable characters
-      ) {
-        return;
-      }
-
-      inputRef.current?.focus();
-    }
-    window.addEventListener("keydown", handleGlobalKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleGlobalKeyDown);
-    };
-  }, []);
-
-  const canSendMessage = Boolean((message.trim() || media.url) && !isSendMessagePending);
+  const canSendMessage = Boolean((newMessage.trim() || media.url) && !isSendMessagePending);
   const isUploadDisabled = isUploading || isSendMessagePending;
 
   return (
     <div className="flex items-center gap-2 pt-2">
-      <MediaUpload
+      <MediaUploadInput
         mediaUrl={media.url}
         isUploading={isUploading}
         isDisabled={isUploadDisabled}
@@ -133,14 +86,12 @@ export default function ChatFooter(props: { roomId: string }) {
         setButtonState={setUploadButtonState}
       />
 
-      <Input
-        ref={inputRef}
-        placeholder="type your message..."
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        className="font-mono text-sm placeholder:font-mono"
-        disabled={isSendMessagePending}
-        onKeyDown={handleKeyDown}
+      <InputMorph
+        newMessage={newMessage}
+        roomId={props.roomId}
+        setNewMessage={setNewMessage}
+        isSendMessagePending={isSendMessagePending}
+        sendMessage={handleSendMessage}
       />
 
       <SendButton

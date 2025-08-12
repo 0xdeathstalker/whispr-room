@@ -2,17 +2,16 @@
 
 import MediaContent from "@/components/sections/chat/media-content";
 import getSystemMessage from "@/lib/actions/getSystemMessage";
-import { convexQuery } from "@convex-dev/react-query";
-import { useQuery } from "@tanstack/react-query";
+import useMessagesQuery from "@/lib/hooks/useMessagesQuery";
+import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "motion/react";
 import { useQueryState } from "nuqs";
 import * as React from "react";
-import { api } from "../../../../convex/_generated/api";
 
-export default function ChatMessages(props: { roomId: string }) {
+export default function ChatMessages({ roomId }: { roomId: string }) {
+  const { data: messages } = useMessagesQuery({ roomId });
+
   const [username] = useQueryState("username", { defaultValue: "" });
-
-  const { data: messages } = useQuery(convexQuery(api.messages.getMessages, { roomId: props.roomId }));
-
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -27,52 +26,73 @@ export default function ChatMessages(props: { roomId: string }) {
   return (
     <div
       ref={containerRef}
-      className="bg-background flex h-64 flex-col gap-2 overflow-y-auto border-y px-2 py-3"
+      className="bg-background flex h-64 flex-col gap-2 overflow-x-hidden overflow-y-auto border-y px-2 py-3"
     >
-      {messages?.map((m) => {
-        if (m.isSystem) {
-          const systemMessage = getSystemMessage({
-            username,
-            messageContent: m.content,
-          });
+      <AnimatePresence mode="wait">
+        {messages?.map((m) => {
+          if (m.isSystem) {
+            const systemMessage = getSystemMessage({
+              username,
+              messageContent: m.content,
+            });
 
-          return (
-            <div
-              key={m._id}
-              className="text-muted-foreground text-center text-[10px]"
-            >
-              {systemMessage}
-            </div>
-          );
-        } else {
-          return (
-            <div
-              key={m._id}
-              className="bg-secondary flex flex-col gap-1 rounded-md px-3 py-2 shadow-xs"
-            >
-              <div className="text-muted-foreground flex items-center justify-between gap-2 text-xs font-semibold">
-                <span>@{m.username === username ? "you" : m.username}</span>
+            return (
+              <div
+                key={m._id}
+                className="text-muted-foreground text-center text-[10px]"
+              >
+                {systemMessage}
+              </div>
+            );
+          } else {
+            return (
+              <motion.div
+                key={m._id}
+                className={cn(
+                  "bg-secondary relative flex max-w-[250px] flex-col rounded-md px-3 py-1 pb-[17px] shadow-xs",
+                  m.username === username ? "place-self-end" : "place-self-start",
+                )}
+                layout="position"
+                layoutId={`message-${messages.length - 1}`}
+                transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+              >
+                <h3 className="text-muted-foreground text-[10px]">
+                  {m.username === username ? null : `@${m.username}`}
+                </h3>
+
+                <div className="break-words">
+                  {m.content && (
+                    <div className="text-secondary-foreground text-sm whitespace-pre-wrap">
+                      {m.content}
+                      {/* reserve space for timestamp only on the last line of text */}
+                      <span
+                        aria-hidden
+                        className="pointer-events-none mt-1 inline-block h-[1em] min-w-12 align-baseline opacity-0 select-none"
+                      />
+                    </div>
+                  )}
+                  {m.mediaUrl && m.mediaType && (
+                    <div className="mb-1 w-full">
+                      <MediaContent
+                        mediaUrl={m.mediaUrl}
+                        mediaType={m.mediaType}
+                        mediaName={m.mediaName}
+                        mediaSize={m.mediaSize}
+                      />
+                    </div>
+                  )}
+                </div>
+
                 {m.createdAt && (
-                  <span className="text-muted-foreground text-[10px]">
+                  <span className="text-muted-foreground absolute right-3 bottom-1 text-[10px]">
                     {new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </span>
                 )}
-              </div>
-              {m.content && <div className="text-secondary-foreground text-sm">{m.content}</div>}
-              {m.mediaUrl && m.mediaType && (
-                <div className="mt-2">
-                  <MediaContent
-                    mediaUrl={m.mediaUrl}
-                    mediaType={m.mediaType}
-                    mediaName={m.mediaName}
-                    mediaSize={m.mediaSize}
-                  />
-                </div>
-              )}
-            </div>
-          );
-        }
-      })}
+              </motion.div>
+            );
+          }
+        })}
+      </AnimatePresence>
     </div>
   );
 }

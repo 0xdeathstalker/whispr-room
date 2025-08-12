@@ -4,24 +4,19 @@ import ChatFooter from "@/components/sections/chat/footer";
 import ChatHeader from "@/components/sections/chat/header";
 import ChatMessages from "@/components/sections/chat/messages";
 import { buttonVariants } from "@/components/ui/button";
+import { LeaveRoomContextProvider } from "@/context/leave-context";
+import useRoomQuery from "@/lib/hooks/useRoomQuery";
 import { cn } from "@/lib/utils";
 import { formSchema } from "@/lib/validation/room";
-import { convexQuery } from "@convex-dev/react-query";
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useQueryState } from "nuqs";
-import { api } from "../../../../convex/_generated/api";
-import { LeaveRoomContextProvider } from "@/context/leave-context";
 
 export default function Chat({ roomId }: { roomId: string }) {
   const [username] = useQueryState("username", { defaultValue: "" });
 
   const validationResult = formSchema.safeParse({ username, roomId });
 
-  const { data: room, isLoading } = useQuery({
-    ...convexQuery(api.rooms.getRoom, { roomId }),
-    retry: false,
-  });
+  const { data: room, isLoading } = useRoomQuery({ roomId });
 
   if (!isLoading && (!room || room?.expiresAt <= Date.now())) {
     return (
