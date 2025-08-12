@@ -1,9 +1,9 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
 import { motion } from "motion/react";
-import { useTheme } from "next-themes";
 import Link from "next/link";
+import { useTheme } from "next-themes";
+import { Label } from "@/components/ui/label";
 
 export default function Footer() {
   const { theme, setTheme } = useTheme();

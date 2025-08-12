@@ -1,9 +1,9 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import useMessagesQuery from "@/lib/hooks/useMessagesQuery";
 import { motion } from "motion/react";
 import * as React from "react";
+import { Input } from "@/components/ui/input";
+import useMessagesQuery from "@/lib/hooks/useMessagesQuery";
 
 type InputMorphProps = {
   newMessage: string;

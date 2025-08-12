@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import type { ButtonState } from "@/lib/types";
 import { LoaderCircle, Paperclip } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
+import { Button } from "@/components/ui/button";
+import type { ButtonState } from "@/lib/types";
 
 type MediaUploadProps = {
   mediaUrl: string;
@@ -31,7 +31,6 @@ export default function MediaUploadInput({
 }: MediaUploadProps) {
   React.useEffect(() => {
     if (isUploading) setButtonState("loading");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUploading]);
 
   return (

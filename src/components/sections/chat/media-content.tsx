@@ -1,12 +1,12 @@
 "use client";
 
+import { AlertCircle, Download, ExternalLink, File } from "lucide-react";
+import Link from "next/link";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getDocIcon, getDocLabel, getDocSize } from "@/lib/actions/getDocActions";
 import { cn } from "@/lib/utils";
-import { AlertCircle, Download, ExternalLink, File } from "lucide-react";
-import Link from "next/link";
-import * as React from "react";
 
 type MediaContentProps = {
   mediaUrl: string;
@@ -80,7 +80,6 @@ export default function MediaContent({ mediaUrl, mediaType, mediaName, mediaSize
     <div className="relative">
       {isLoading && renderLoadingState()}
       {hasError && renderErrorState("image")}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={mediaUrl}
         alt="shared image"

@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import type { ButtonState } from "@/lib/types";
 import { LoaderCircle } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
+import { Button } from "@/components/ui/button";
+import type { ButtonState } from "@/lib/types";
 
 const BUTTON_STATES = {
   idle: "create a room",
@@ -21,7 +21,6 @@ type CreateButtonProps = {
 export default function CreateButton({ buttonState, setButtonState, isCreateRoomMutationPending }: CreateButtonProps) {
   React.useEffect(() => {
     if (isCreateRoomMutationPending) setButtonState("loading");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCreateRoomMutationPending]);
 
   return (
