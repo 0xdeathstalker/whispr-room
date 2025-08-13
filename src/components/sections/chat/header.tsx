@@ -2,12 +2,7 @@
 
 import { useConvexMutation } from "@convex-dev/react-query";
 import { type UseMutateFunction, useMutation } from "@tanstack/react-query";
-import {
-  ChevronDown,
-  EllipsisVertical,
-  LoaderCircle,
-  Users,
-} from "lucide-react";
+import { ChevronDown, EllipsisVertical, LoaderCircle, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { usePostHog } from "posthog-js/react";
@@ -46,32 +41,29 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
     speed: 0.4,
   });
 
-  const [leaveButtonState, setLeaveButtonState] =
-    React.useState<ButtonState>("idle");
+  const [leaveButtonState, setLeaveButtonState] = React.useState<ButtonState>("idle");
 
   const validationResult = formSchema.safeParse({ username, roomId });
 
-  const { data: participants, isLoading: isParticipantsLoading } =
-    useParticipantsQuery({ roomId });
+  const { data: participants, isLoading: isParticipantsLoading } = useParticipantsQuery({ roomId });
   const { data: room, isLoading: isRoomLoading } = useRoomQuery({ roomId });
 
-  const { mutate: leaveRoom, isPending: isLeaveRoomMutationPending } =
-    useMutation({
-      mutationKey: ["leaveRoom", roomId],
-      mutationFn: useConvexMutation(api.rooms.leaveRoom),
-      onSuccess: () => {
-        setLeaveButtonState("idle");
-        posthog.capture("room_left", { roomId, username });
-        router.push("/");
-      },
-      onError: (error) => {
-        posthog.capture("room_leave_failed", {
-          roomId,
-          username,
-          error: error.message,
-        });
-      },
-    });
+  const { mutate: leaveRoom, isPending: isLeaveRoomMutationPending } = useMutation({
+    mutationKey: ["leaveRoom", roomId],
+    mutationFn: useConvexMutation(api.rooms.leaveRoom),
+    onSuccess: () => {
+      setLeaveButtonState("idle");
+      posthog.capture("room_left", { roomId, username });
+      router.push("/");
+    },
+    onError: (error) => {
+      posthog.capture("room_leave_failed", {
+        roomId,
+        username,
+        error: error.message,
+      });
+    },
+  });
 
   const { mutate: joinRoom } = useMutation({
     mutationKey: ["joinRoom"],
@@ -103,16 +95,12 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
   React.useEffect(() => {
     if (isParticipantsLoading || !participants || isLeaving.current) return;
 
-    const participantAlreadyExists = participants.find(
-      (p) => p.username === username
-    );
+    const participantAlreadyExists = participants.find((p) => p.username === username);
 
     if (!participantAlreadyExists && validationResult.success) {
       joinRoom({ username, roomId });
     } else if (!validationResult.success) {
-      toast.error(
-        `error: Unable to join the room, username:'${username}' or roomId:'${roomId}' not validated`
-      );
+      toast.error(`error: Unable to join the room, username:'${username}' or roomId:'${roomId}' not validated`);
     }
     // doing nothing if participant already exists
   }, [username, roomId, participants, isParticipantsLoading]);
@@ -129,7 +117,11 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
   return (
     <div className="flex items-center justify-between px-2 pb-2">
       <div className="flex items-center gap-1">
-        <h1 ref={ref} onMouseOver={replay} onFocus={replay} />
+        <h1
+          ref={ref}
+          onMouseOver={replay}
+          onFocus={replay}
+        />
         <CopyButton textToCopy={roomId} />
       </div>
 
@@ -158,16 +150,15 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
               <DropdownMenuSeparator />
               {participants ? (
                 participants.map((p) => (
-                  <DropdownMenuItem key={p._id} className="font-mono text-xs">
-                    {p.username === username
-                      ? `you(${p.username})`
-                      : p.username}
+                  <DropdownMenuItem
+                    key={p._id}
+                    className="font-mono text-xs"
+                  >
+                    {p.username === username ? `you(${p.username})` : p.username}
                   </DropdownMenuItem>
                 ))
               ) : (
-                <DropdownMenuItem className="text-xs">
-                  No participants
-                </DropdownMenuItem>
+                <DropdownMenuItem className="text-xs">No participants</DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -175,7 +166,10 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
           {isRoomLoading ? (
             <Skeleton className="h-9 w-[74px]" />
           ) : room ? (
-            <Button variant="ghost" size="sm">
+            <Button
+              variant="ghost"
+              size="sm"
+            >
               <Timer
                 startTimestamp={room.createdAt}
                 stopTimestamp={room.expiresAt}
@@ -230,8 +224,15 @@ function MobileDropdown({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild className="sm:hidden">
-        <Button variant="ghost" size="icon" className="size-[32px]">
+      <DropdownMenuTrigger
+        asChild
+        className="sm:hidden"
+      >
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-[32px]"
+        >
           <EllipsisVertical className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -258,16 +259,15 @@ function MobileDropdown({
               <DropdownMenuSeparator />
               {participants ? (
                 participants.map((p) => (
-                  <DropdownMenuItem key={p._id} className="font-mono text-xs">
-                    {p.username === username
-                      ? `you(${p.username})`
-                      : p.username}
+                  <DropdownMenuItem
+                    key={p._id}
+                    className="font-mono text-xs"
+                  >
+                    {p.username === username ? `you(${p.username})` : p.username}
                   </DropdownMenuItem>
                 ))
               ) : (
-                <DropdownMenuItem className="font-mono text-xs">
-                  No participants
-                </DropdownMenuItem>
+                <DropdownMenuItem className="font-mono text-xs">No participants</DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
