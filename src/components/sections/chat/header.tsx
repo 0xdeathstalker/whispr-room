@@ -1,6 +1,5 @@
 "use client";
 
-import CopyButton from "@/components/copy-button";
 import LeaveButton from "@/components/sections/chat/leave-button";
 import Timer from "@/components/timer";
 import { Button } from "@/components/ui/button";
@@ -23,18 +22,13 @@ import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { usePostHog } from "posthog-js/react";
 import * as React from "react";
-import { useScramble } from "use-scramble";
 import { api } from "../../../../convex/_generated/api";
+import RoomId from "./room-id";
 
 export default function ChatHeader({ roomId }: { roomId: string }) {
   const [username] = useQueryState("username", { defaultValue: "" });
   const router = useRouter();
   const posthog = usePostHog();
-
-  const { ref, replay } = useScramble({
-    text: `#${roomId}`,
-    speed: 0.4,
-  });
 
   const [leaveButtonState, setLeaveButtonState] = React.useState<ButtonState>("idle");
 
@@ -60,14 +54,7 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
 
   return (
     <div className="flex items-center justify-between px-2 pb-2">
-      <div className="flex items-center gap-1">
-        <h1
-          ref={ref}
-          onMouseOver={replay}
-          onFocus={replay}
-        />
-        <CopyButton textToCopy={roomId} />
-      </div>
+      <RoomId roomId={roomId} />
 
       <div className="flex items-center gap-4">
         <div className="text-muted-foreground inline-flex items-center gap-1">
