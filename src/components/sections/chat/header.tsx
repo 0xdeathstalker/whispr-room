@@ -34,8 +34,6 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
   const router = useRouter();
   const posthog = usePostHog();
 
-  const { isLeaving } = useLeaveRoom();
-
   const { ref, replay } = useScramble({
     text: `#${roomId}`,
     speed: 0.4,
@@ -65,24 +63,19 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
     },
   });
 
-  const { mutate: joinRoom } = useMutation({
-    mutationKey: ["joinRoom"],
-    mutationFn: useConvexMutation(api.participants.joinRoom),
-    onSuccess: (data: { roomId: string }) => {
-      toast.success(`success: joined room ${data.roomId}`);
-      posthog.capture("joined_room", { username, roomId });
-    },
-    onError: (error) => {
-      toast.error(`error: failed to join room:: ${error.message}`);
-      posthog.capture("room_join_failed", { username, roomId });
-      router.push("/");
-    },
-  });
-
-  function handleLeaveRoom() {
-    isLeaving.current = true;
-    leaveRoom({ roomId, username });
-  }
+  // const { mutate: joinRoom } = useMutation({
+  //   mutationKey: ["joinRoom"],
+  //   mutationFn: useConvexMutation(api.participants.joinRoom),
+  //   onSuccess: (data: { roomId: string }) => {
+  //     toast.success(`success: joined room ${data.roomId}`);
+  //     posthog.capture("joined_room", { username, roomId });
+  //   },
+  //   onError: (error) => {
+  //     toast.error(`error: failed to join room:: ${error.message}`);
+  //     posthog.capture("room_join_failed", { username, roomId });
+  //     router.push("/");
+  //   },
+  // });
 
   // const handleBeforeUnload = React.useCallback(() => {
   //   if (roomId && username) {
@@ -92,18 +85,31 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
   // }, [roomId, username, leaveRoom]);
 
   // auto join room when the user visits the url with valid username and room id
-  React.useEffect(() => {
-    if (isParticipantsLoading || !participants || isLeaving.current) return;
+  // React.useEffect(() => {
+  //   if (isParticipantsLoading || !participants || isLeaving.current) return;
 
-    const participantAlreadyExists = participants.find((p) => p.username === username);
+  //   const participantAlreadyExists = participants.find(
+  //     (p) => p.username === username
+  //   );
 
-    if (!participantAlreadyExists && validationResult.success) {
-      joinRoom({ username, roomId });
-    } else if (!validationResult.success) {
-      toast.error(`error: Unable to join the room, username:'${username}' or roomId:'${roomId}' not validated`);
-    }
-    // doing nothing if participant already exists
-  }, [username, roomId, participants, isParticipantsLoading]);
+  //   if (!participantAlreadyExists && validationResult.success) {
+  //     joinRoom({ username, roomId });
+  //   } else if (participantAlreadyExists && !hasNotifiedExistingUser) {
+  //     // User already exists in the room, show a subtle notification only once
+  //     toast.info(`Already joined as '${username}'`);
+  //     setHasNotifiedExistingUser(true);
+  //   } else if (!validationResult.success) {
+  //     toast.error(
+  //       `error: Unable to join the room, username:'${username}' or roomId:'${roomId}' not validated`
+  //     );
+  //   }
+  // }, [
+  //   username,
+  //   roomId,
+  //   participants,
+  //   isParticipantsLoading,
+  //   hasNotifiedExistingUser,
+  // ]);
 
   // auto leave room when user closes tab/window
   // React.useEffect(() => {
@@ -181,7 +187,7 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
             buttonState={leaveButtonState}
             setButtonState={setLeaveButtonState}
             isLeaveRoomMutationPending={isLeaveRoomMutationPending}
-            leaveRoom={handleLeaveRoom}
+            leaveRoom={() => leaveRoom({ roomId, username })}
           />
 
           <MobileDropdown
