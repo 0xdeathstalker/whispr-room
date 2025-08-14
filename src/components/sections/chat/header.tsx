@@ -1,14 +1,5 @@
 "use client";
 
-import { useConvexMutation } from "@convex-dev/react-query";
-import { type UseMutateFunction, useMutation } from "@tanstack/react-query";
-import { ChevronDown, EllipsisVertical, LoaderCircle, Users } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useQueryState } from "nuqs";
-import { usePostHog } from "posthog-js/react";
-import * as React from "react";
-import { toast } from "sonner";
-import { useScramble } from "use-scramble";
 import CopyButton from "@/components/copy-button";
 import LeaveButton from "@/components/sections/chat/leave-button";
 import Timer from "@/components/timer";
@@ -22,11 +13,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useLeaveRoom } from "@/context/leave-context";
 import useParticipantsQuery from "@/lib/hooks/useParticipantsQuery";
 import useRoomQuery from "@/lib/hooks/useRoomQuery";
 import type { ButtonState, Participants } from "@/lib/types";
-import { formSchema } from "@/lib/validation/room";
+import { useConvexMutation } from "@convex-dev/react-query";
+import { type UseMutateFunction, useMutation } from "@tanstack/react-query";
+import { ChevronDown, EllipsisVertical, LoaderCircle, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useQueryState } from "nuqs";
+import { usePostHog } from "posthog-js/react";
+import * as React from "react";
+import { useScramble } from "use-scramble";
 import { api } from "../../../../convex/_generated/api";
 
 export default function ChatHeader({ roomId }: { roomId: string }) {
@@ -40,8 +37,6 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
   });
 
   const [leaveButtonState, setLeaveButtonState] = React.useState<ButtonState>("idle");
-
-  const validationResult = formSchema.safeParse({ username, roomId });
 
   const { data: participants, isLoading: isParticipantsLoading } = useParticipantsQuery({ roomId });
   const { data: room, isLoading: isRoomLoading } = useRoomQuery({ roomId });
@@ -62,63 +57,6 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
       });
     },
   });
-
-  // const { mutate: joinRoom } = useMutation({
-  //   mutationKey: ["joinRoom"],
-  //   mutationFn: useConvexMutation(api.participants.joinRoom),
-  //   onSuccess: (data: { roomId: string }) => {
-  //     toast.success(`success: joined room ${data.roomId}`);
-  //     posthog.capture("joined_room", { username, roomId });
-  //   },
-  //   onError: (error) => {
-  //     toast.error(`error: failed to join room:: ${error.message}`);
-  //     posthog.capture("room_join_failed", { username, roomId });
-  //     router.push("/");
-  //   },
-  // });
-
-  // const handleBeforeUnload = React.useCallback(() => {
-  //   if (roomId && username) {
-  //     isLeaving.current = true;
-  //     leaveRoom({ roomId, username });
-  //   }
-  // }, [roomId, username, leaveRoom]);
-
-  // auto join room when the user visits the url with valid username and room id
-  // React.useEffect(() => {
-  //   if (isParticipantsLoading || !participants || isLeaving.current) return;
-
-  //   const participantAlreadyExists = participants.find(
-  //     (p) => p.username === username
-  //   );
-
-  //   if (!participantAlreadyExists && validationResult.success) {
-  //     joinRoom({ username, roomId });
-  //   } else if (participantAlreadyExists && !hasNotifiedExistingUser) {
-  //     // User already exists in the room, show a subtle notification only once
-  //     toast.info(`Already joined as '${username}'`);
-  //     setHasNotifiedExistingUser(true);
-  //   } else if (!validationResult.success) {
-  //     toast.error(
-  //       `error: Unable to join the room, username:'${username}' or roomId:'${roomId}' not validated`
-  //     );
-  //   }
-  // }, [
-  //   username,
-  //   roomId,
-  //   participants,
-  //   isParticipantsLoading,
-  //   hasNotifiedExistingUser,
-  // ]);
-
-  // auto leave room when user closes tab/window
-  // React.useEffect(() => {
-  //   window.addEventListener("beforeunload", handleBeforeUnload);
-
-  //   return () => {
-  //     window.removeEventListener("beforeunload", handleBeforeUnload);
-  //   };
-  // }, [handleBeforeUnload]);
 
   return (
     <div className="flex items-center justify-between px-2 pb-2">
