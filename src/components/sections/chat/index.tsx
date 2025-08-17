@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useQueryState } from "nuqs";
 import ChatFooter from "@/components/sections/chat/footer";
 import ChatHeader from "@/components/sections/chat/header";
 import ChatMessages from "@/components/sections/chat/messages";
@@ -8,8 +10,6 @@ import useParticipantsQuery from "@/lib/hooks/useParticipantsQuery";
 import useRoomQuery from "@/lib/hooks/useRoomQuery";
 import { cn } from "@/lib/utils";
 import { formSchema } from "@/lib/validation/room";
-import Link from "next/link";
-import { useQueryState } from "nuqs";
 import RoomId from "./room-id";
 
 export default function Chat({ roomId }: { roomId: string }) {
