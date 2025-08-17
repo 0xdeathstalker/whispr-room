@@ -7,9 +7,6 @@ import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { usePostHog } from "posthog-js/react";
 import * as React from "react";
-import { toast } from "sonner";
-import { useScramble } from "use-scramble";
-import CopyButton from "@/components/copy-button";
 import LeaveButton from "@/components/sections/chat/leave-button";
 import Timer from "@/components/timer";
 import { Button } from "@/components/ui/button";
@@ -22,28 +19,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useLeaveRoom } from "@/context/leave-context";
 import useParticipantsQuery from "@/lib/hooks/useParticipantsQuery";
 import useRoomQuery from "@/lib/hooks/useRoomQuery";
 import type { ButtonState, Participants } from "@/lib/types";
-import { formSchema } from "@/lib/validation/room";
 import { api } from "../../../../convex/_generated/api";
+import RoomId from "./room-id";
 
 export default function ChatHeader({ roomId }: { roomId: string }) {
   const [username] = useQueryState("username", { defaultValue: "" });
   const router = useRouter();
   const posthog = usePostHog();
 
-  const { isLeaving } = useLeaveRoom();
-
-  const { ref, replay } = useScramble({
-    text: `#${roomId}`,
-    speed: 0.4,
-  });
-
   const [leaveButtonState, setLeaveButtonState] = React.useState<ButtonState>("idle");
-
-  const validationResult = formSchema.safeParse({ username, roomId });
 
   const { data: participants, isLoading: isParticipantsLoading } = useParticipantsQuery({ roomId });
   const { data: room, isLoading: isRoomLoading } = useRoomQuery({ roomId });
@@ -65,65 +52,9 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
     },
   });
 
-  const { mutate: joinRoom } = useMutation({
-    mutationKey: ["joinRoom"],
-    mutationFn: useConvexMutation(api.participants.joinRoom),
-    onSuccess: (data: { roomId: string }) => {
-      toast.success(`success: joined room ${data.roomId}`);
-      posthog.capture("joined_room", { username, roomId });
-    },
-    onError: (error) => {
-      toast.error(`error: failed to join room:: ${error.message}`);
-      posthog.capture("room_join_failed", { username, roomId });
-      router.push("/");
-    },
-  });
-
-  function handleLeaveRoom() {
-    isLeaving.current = true;
-    leaveRoom({ roomId, username });
-  }
-
-  const handleBeforeUnload = React.useCallback(() => {
-    if (roomId && username) {
-      isLeaving.current = true;
-      leaveRoom({ roomId, username });
-    }
-  }, [roomId, username, leaveRoom]);
-
-  // auto join room when the user visits the url with valid username and room id
-  React.useEffect(() => {
-    if (isParticipantsLoading || !participants || isLeaving.current) return;
-
-    const participantAlreadyExists = participants.find((p) => p.username === username);
-
-    if (!participantAlreadyExists && validationResult.success) {
-      joinRoom({ username, roomId });
-    } else if (!validationResult.success) {
-      toast.error(`error: Unable to join the room, username:'${username}' or roomId:'${roomId}' not validated`);
-    }
-    // doing nothing if participant already exists
-  }, [username, roomId, participants, isParticipantsLoading]);
-
-  // auto leave room when user closes tab/window
-  React.useEffect(() => {
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [handleBeforeUnload]);
-
   return (
     <div className="flex items-center justify-between px-2 pb-2">
-      <div className="flex items-center gap-1">
-        <h1
-          ref={ref}
-          onMouseOver={replay}
-          onFocus={replay}
-        />
-        <CopyButton textToCopy={roomId} />
-      </div>
+      <RoomId roomId={roomId} />
 
       <div className="flex items-center gap-4">
         <div className="text-muted-foreground inline-flex items-center gap-1">
@@ -181,7 +112,7 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
             buttonState={leaveButtonState}
             setButtonState={setLeaveButtonState}
             isLeaveRoomMutationPending={isLeaveRoomMutationPending}
-            leaveRoom={handleLeaveRoom}
+            leaveRoom={() => leaveRoom({ roomId, username })}
           />
 
           <MobileDropdown

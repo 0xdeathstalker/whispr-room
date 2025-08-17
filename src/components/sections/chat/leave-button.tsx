@@ -3,6 +3,17 @@
 import { LoaderCircle } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import type { ButtonState } from "@/lib/types";
 
@@ -35,26 +46,46 @@ export default function LeaveButton(props: {
   }, [props.isLeaveRoomMutationPending]);
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      className="hover:bg-destructive/10 hover:text-destructive relative hidden size-[32px] overflow-hidden transition-all ease-in-out sm:inline-flex"
-      onClick={props.leaveRoom}
-    >
-      <AnimatePresence
-        mode="popLayout"
-        initial={false}
-      >
-        <motion.span
-          key={props.buttonState}
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0, opacity: 0 }}
-          transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hover:bg-destructive/10 hover:text-destructive relative hidden size-[32px] overflow-hidden transition-all ease-in-out sm:inline-flex"
         >
-          {BUTTON_STATES[props.buttonState]}
-        </motion.span>
-      </AnimatePresence>
-    </Button>
+          <AnimatePresence
+            mode="popLayout"
+            initial={false}
+          >
+            <motion.span
+              key={props.buttonState}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+            >
+              {BUTTON_STATES[props.buttonState]}
+            </motion.span>
+          </AnimatePresence>
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="font-sans w-sm">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="sr-only">are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription className="font-sans">
+            are you absolutely sure to exit the room?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel className="h-8">cancel</AlertDialogCancel>
+          <AlertDialogAction
+            className="h-8 bg-destructive/80 text-destructive-foreground hover:bg-destructive/50"
+            onClick={props.leaveRoom}
+          >
+            exit
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
