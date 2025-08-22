@@ -24,6 +24,7 @@ import useRoomQuery from "@/lib/hooks/useRoomQuery";
 import type { ButtonState, Participants } from "@/lib/types";
 import { api } from "../../../../convex/_generated/api";
 import RoomId from "./room-id";
+import useParticipantsCount from "@/lib/hooks/useParticipantsCount";
 
 export default function ChatHeader({ roomId }: { roomId: string }) {
   const [username] = useQueryState("username", { defaultValue: "" });
@@ -33,6 +34,7 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
   const [leaveButtonState, setLeaveButtonState] = React.useState<ButtonState>("idle");
 
   const { data: participants, isLoading: isParticipantsLoading } = useParticipantsQuery({ roomId });
+  const { data: participantCount, isLoading: isParticipantCountLoading } = useParticipantsCount({ roomId });
   const { data: room, isLoading: isRoomLoading } = useRoomQuery({ roomId });
 
   const { mutate: leaveRoom, isPending: isLeaveRoomMutationPending } = useMutation({
@@ -60,7 +62,7 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
         <div className="text-muted-foreground inline-flex items-center gap-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              {isParticipantsLoading ? (
+              {isParticipantCountLoading ? (
                 <Skeleton className="h-9 w-14" />
               ) : (
                 <Button
@@ -69,7 +71,7 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
                   className="hidden items-center gap-1 rounded-sm py-1 font-mono text-xs sm:flex sm:text-sm"
                 >
                   <Users className="h-2 w-2" />
-                  {participants?.length}
+                  {participantCount}
                   <ChevronDown className="h-1 w-1 md:h-2 md:w-2" />
                 </Button>
               )}
@@ -118,7 +120,8 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
           <MobileDropdown
             roomId={roomId}
             participants={participants}
-            isParticipantsLoading={isParticipantsLoading}
+            participantCount={participantCount}
+            isParticipantCountLoading={isParticipantCountLoading}
             isLeaveRoomMutationPending={isLeaveRoomMutationPending}
             leaveRoom={leaveRoom}
           />
@@ -131,7 +134,8 @@ export default function ChatHeader({ roomId }: { roomId: string }) {
 type MobileDropdownProps = {
   roomId: string;
   participants: Participants;
-  isParticipantsLoading: boolean;
+  participantCount: number | undefined;
+  isParticipantCountLoading: boolean;
   isLeaveRoomMutationPending: boolean;
   leaveRoom: UseMutateFunction<
     null,
@@ -147,7 +151,8 @@ type MobileDropdownProps = {
 function MobileDropdown({
   roomId,
   participants,
-  isParticipantsLoading,
+  participantCount,
+  isParticipantCountLoading,
   isLeaveRoomMutationPending,
   leaveRoom,
 }: MobileDropdownProps) {
@@ -171,13 +176,13 @@ function MobileDropdown({
         <DropdownMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              {isParticipantsLoading ? (
+              {isParticipantCountLoading ? (
                 <Skeleton className="h-9 w-14" />
               ) : (
                 <div className="flex w-full items-center justify-between">
                   <div className="flex items-center gap-1 font-mono">
                     <Users className="h-2 w-2" />
-                    {participants?.length}
+                    {participantCount}
                   </div>
                   <ChevronDown className="h-1 w-1 md:h-2 md:w-2" />
                 </div>
